@@ -7,9 +7,9 @@
 **Cliente ficticio de la demo:** Comercializadora del Sur S.R.L.
 **Período de los datos:** noviembre de 2026
 **Última actualización:** 04/11/2026
-**Estado general:** Fase 7 completada — maestros
-**Fases completadas:** 8 / 15
-**Próxima fase:** F8 — Tesorería
+**Estado general:** Fase 8 completada — tesorería
+**Fases completadas:** 9 / 15
+**Próxima fase:** F9 — Contaduría
 
 ---
 
@@ -141,7 +141,7 @@ En las tareas:
 | F5 | Compras | Listado, formulario, factura y estados | Completado | 100% |
 | F6 | Ventas | Listado, formulario, factura y cobranza | Completado | 100% |
 | F7 | Maestros | Proveedores, clientes y productos | Completado | 100% |
-| F8 | Tesorería | Pagos, cobros, movimientos y transferencias | Pendiente | 0% |
+| F8 | Tesorería | Pagos, cobros, movimientos y transferencias | Completado | 100% |
 | F9 | Contaduría | Bandeja, asientos y plan de cuentas | Pendiente | 0% |
 | F10 | Libros contables | Libro Diario y Libro Mayor | Pendiente | 0% |
 | F11 | Balances y estados | Comprobación, ESP, ER, flujo y evolución | Pendiente | 0% |
@@ -490,24 +490,24 @@ En las tareas:
 
 ### F8 — Tesorería
 
-**Estado:** Pendiente
+**Estado:** Completado
 **Depende de:** F2, F3, F5, F6
 **Objetivo:** registrar pagos, cobros, movimientos de fondos y transferencias.
 
 **Tareas**
 
-- [ ] Crear pantalla de pagos con proveedor, factura, importe pendiente, vencimiento, medio y estado.
-- [ ] Implementar pago total y parcial con validaciones.
-- [ ] Generar comprobante de pago.
-- [ ] Actualizar saldo del proveedor.
-- [ ] Generar movimiento de tesorería y documento para Contaduría.
-- [ ] Crear pantalla de cobros con las mismas reglas.
-- [ ] Generar recibo ficticio.
-- [ ] Actualizar saldo del cliente.
-- [ ] Crear pantalla de movimientos de fondos con fecha, descripción, origen, destino, ingreso, egreso y saldo.
-- [ ] Implementar transferencias entre caja y banco.
-- [ ] Implementar filtros por cuenta y período.
-- [ ] Verificar que no se pueda pagar o cobrar más que el saldo pendiente.
+- [x] Crear pantalla de pagos con proveedor, factura, importe pendiente, vencimiento, medio y estado.
+- [x] Implementar pago total y parcial con validaciones.
+- [x] Generar comprobante de pago.
+- [x] Actualizar saldo del proveedor.
+- [x] Generar movimiento de tesorería y documento para Contaduría.
+- [x] Crear pantalla de cobros con las mismas reglas.
+- [x] Generar recibo ficticio.
+- [x] Actualizar saldo del cliente.
+- [x] Crear pantalla de movimientos de fondos con fecha, descripción, origen, destino, ingreso, egreso y saldo.
+- [x] Implementar transferencias entre caja y banco.
+- [x] Implementar filtros por cuenta y período.
+- [x] Verificar que no se pueda pagar o cobrar más que el saldo pendiente.
 
 **Entregable:** tesorería completa y vinculada a compras/ventas/contaduría.
 
@@ -770,6 +770,7 @@ Recorrido que debe poder hacerse frente al cliente:
 | 03/11/2026 | F2 | 49 tests aprobados; `typecheck`, `lint` y `format:check` sin errores. | Completado |
 | 04/11/2026 | F6 | Módulo de ventas implementado: listado, formulario, factura emitida, cuenta por cobrar y asiento balanceado. | Completado |
 | 04/11/2026 | F7 | Módulo de maestros implementado: proveedores, clientes y productos con alta, edición, ficha, saldo, historial y eliminación protegida. | Completado |
+| 04/11/2026 | F8 | Módulo de tesorería implementado: pagos, cobros, movimientos de fondos y transferencias con validaciones e idempotencia. | Completado |
 
 ---
 
