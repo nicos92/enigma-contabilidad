@@ -7,9 +7,9 @@
 **Cliente ficticio de la demo:** Comercializadora del Sur S.R.L.
 **Período de los datos:** noviembre de 2026
 **Última actualización:** 04/11/2026
-**Estado general:** Fase 4 completada — dashboard
-**Fases completadas:** 5 / 15
-**Próxima fase:** F5 — Compras
+**Estado general:** Fase 5 completada — compras
+**Fases completadas:** 6 / 15
+**Próxima fase:** F6 — Ventas
 
 ---
 
@@ -138,7 +138,7 @@ En las tareas:
 | F2 | Dominio, datos y motor contable | Tipos, seed, asientos y persistencia | Completado | 100% |
 | F3 | Sistema visual y layout | Design system, sidebar, topbar y UI kit | Completado | 100% |
 | F4 | Dashboard | Panel general con indicadores y gráficos | Completado | 100% |
-| F5 | Compras | Listado, formulario, factura y estados | Pendiente | 0% |
+| F5 | Compras | Listado, formulario, factura y estados | Completado | 100% |
 | F6 | Ventas | Listado, formulario, factura y cobranza | Pendiente | 0% |
 | F7 | Maestros | Proveedores, clientes y productos | Pendiente | 0% |
 | F8 | Tesorería | Pagos, cobros, movimientos y transferencias | Pendiente | 0% |
@@ -394,23 +394,37 @@ En las tareas:
 
 ### F5 — Compras
 
-**Estado:** Pendiente
+**Estado:** Completado
 **Depende de:** F2, F3
 **Objetivo:** administrar compras y generar la documentación recibida.
 
 **Tareas**
 
-- [ ] Crear listado con búsqueda por proveedor y filtros por fecha y estado.
-- [ ] Crear formulario con proveedor, CUIT, fecha, tipo y número de comprobante, condición de pago, ítems, cantidad, precio, IVA, subtotal y total.
-- [ ] Implementar validaciones visuales y cálculo automático.
-- [ ] Implementar numeración automática de comprobantes.
-- [ ] Crear detalle de compra.
-- [ ] Crear factura recibida simulada e imprimible.
-- [ ] Actualizar estado de pago y estado contable.
-- [ ] Enviar la operación a la bandeja de Contaduría.
-- [ ] Persistir la operación y reflejarla en el dashboard.
+- [x] Crear listado con búsqueda por proveedor y filtros por fecha y estado.
+- [x] Crear formulario con proveedor, CUIT, fecha, tipo y número de comprobante, condición de pago, ítems, cantidad, precio, IVA, subtotal y total.
+- [x] Implementar validaciones visuales y cálculo automático.
+- [x] Implementar numeración automática de comprobantes.
+- [x] Crear detalle de compra.
+- [x] Crear factura recibida simulada e imprimible.
+- [x] Actualizar estado de pago y estado contable.
+- [x] Enviar la operación a la bandeja de Contaduría.
+- [x] Persistir la operación y reflejarla en el dashboard.
 
 **Entregable:** módulo de compras operativo.
+
+**Evidencia**
+
+- `src/views/ComprasView.vue`: listado con filtros, resumen, cuentas por pagar, formulario, detalle con pestañas, factura recibida y trazabilidad.
+- `src/core/compras.ts`: filtros, resumen, numeración automática, vencimientos, validación, generación de compra, cuentas por pagar y etiquetas de estado.
+- `src/stores/contabilidad.ts`: `registrarCompra` agrega la compra, el asiento propuesto y el documento pendiente, y persiste el estado.
+- `src/router/index.ts`: `/compras` carga `ComprasView.vue`.
+- `src/core/contabilidad/asientos.ts`: `generarAsientoCompra` omite la línea de IVA cuando es cero.
+- `src/css/styles.css`: estilos específicos de compras e impresión de la factura recibida con `body.imprimiendo-factura`.
+- Numeración automática: siguiente comprobante `FC-A-0001-00000109`; siguiente ID `C-009`.
+- La factura recibida usa `DocumentViewer`, con leyenda de demostración, totales con IVA y redondeo al centavo.
+- Las nuevas compras quedan pendientes en la bandeja de Contaduría y en el dashboard.
+- Tests nuevos en `src/core/compras.spec.ts`, `src/stores/contabilidad.compras.spec.ts` y `src/views/ComprasView.spec.ts`.
+- `pnpm typecheck`, `pnpm lint`, `pnpm format:check` y `pnpm test` terminan sin errores.
 
 **Criterio de aceptación**
 
