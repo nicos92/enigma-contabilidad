@@ -7,9 +7,9 @@
 **Cliente ficticio de la demo:** Comercializadora del Sur S.R.L.
 **Período de los datos:** noviembre de 2026
 **Última actualización:** 04/11/2026
-**Estado general:** Fase 6 completada — ventas
-**Fases completadas:** 7 / 15
-**Próxima fase:** F7 — Maestros
+**Estado general:** Fase 7 completada — maestros
+**Fases completadas:** 8 / 15
+**Próxima fase:** F8 — Tesorería
 
 ---
 
@@ -140,7 +140,7 @@ En las tareas:
 | F4 | Dashboard | Panel general con indicadores y gráficos | Completado | 100% |
 | F5 | Compras | Listado, formulario, factura y estados | Completado | 100% |
 | F6 | Ventas | Listado, formulario, factura y cobranza | Completado | 100% |
-| F7 | Maestros | Proveedores, clientes y productos | Pendiente | 0% |
+| F7 | Maestros | Proveedores, clientes y productos | Completado | 100% |
 | F8 | Tesorería | Pagos, cobros, movimientos y transferencias | Pendiente | 0% |
 | F9 | Contaduría | Bandeja, asientos y plan de cuentas | Pendiente | 0% |
 | F10 | Libros contables | Libro Diario y Libro Mayor | Pendiente | 0% |
@@ -465,18 +465,18 @@ En las tareas:
 
 ### F7 — Maestros
 
-**Estado:** Pendiente
+**Estado:** Completado
 **Depende de:** F2, F3
 **Objetivo:** consultar y administrar proveedores, clientes y productos.
 
 **Tareas**
 
-- [ ] Crear listado y ficha de proveedores con saldo y historial.
-- [ ] Crear listado y ficha de clientes con saldo y historial.
-- [ ] Crear catálogo de productos/servicios con precio, costo y alícuota de IVA.
-- [ ] Implementar alta y edición con validaciones.
-- [ ] Vincular cada ficha con sus operaciones y asientos.
-- [ ] Impedir la eliminación de maestros con operaciones asociadas.
+- [x] Crear listado y ficha de proveedores con saldo y historial.
+- [x] Crear listado y ficha de clientes con saldo y historial.
+- [x] Crear catálogo de productos/servicios con precio, costo y alícuota de IVA.
+- [x] Implementar alta y edición con validaciones.
+- [x] Vincular cada ficha con sus operaciones y asientos.
+- [x] Impedir la eliminación de maestros con operaciones asociadas.
 
 **Entregable:** maestros integrados con el resto del sistema.
 
@@ -769,6 +769,7 @@ Recorrido que debe poder hacerse frente al cliente:
 | 03/11/2026 | F2 | Persistencia versionada en `localStorage`, restauración demo y aprobación idempotente implementadas. | Completado |
 | 03/11/2026 | F2 | 49 tests aprobados; `typecheck`, `lint` y `format:check` sin errores. | Completado |
 | 04/11/2026 | F6 | Módulo de ventas implementado: listado, formulario, factura emitida, cuenta por cobrar y asiento balanceado. | Completado |
+| 04/11/2026 | F7 | Módulo de maestros implementado: proveedores, clientes y productos con alta, edición, ficha, saldo, historial y eliminación protegida. | Completado |
 
 ---
 
