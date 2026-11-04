@@ -70,16 +70,27 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/DashboardView.vue'),
     meta: { titulo: 'Panel general' },
   },
-  ...modulos.map<RouteRecordRaw>((modulo) => ({
-    path: `/${modulo.path}`,
-    name: modulo.name,
-    component: () => import('@/views/PlaceholderView.vue'),
-    props: {
-      titulo: modulo.titulo,
-      descripcion: modulo.descripcion,
+  {
+    path: '/compras',
+    name: 'compras',
+    component: () => import('@/views/ComprasView.vue'),
+    meta: {
+      titulo: 'Compras',
+      descripcion: 'Circuito de compras, facturas recibidas y estado de pago.',
     },
-    meta: { titulo: modulo.titulo, descripcion: modulo.descripcion },
-  })),
+  },
+  ...modulos
+    .filter((modulo) => modulo.path !== 'compras')
+    .map<RouteRecordRaw>((modulo) => ({
+      path: `/${modulo.path}`,
+      name: modulo.name,
+      component: () => import('@/views/PlaceholderView.vue'),
+      props: {
+        titulo: modulo.titulo,
+        descripcion: modulo.descripcion,
+      },
+      meta: { titulo: modulo.titulo, descripcion: modulo.descripcion },
+    })),
   {
     path: '/configuracion',
     name: 'configuracion',

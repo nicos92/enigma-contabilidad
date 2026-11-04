@@ -213,7 +213,9 @@ export function generarAsientoCompra(compra: Compra, concepto?: string): Asiento
   for (const [cuentaId, importe] of debitos) {
     lineas.push(lineaDebe(cuentaId, importe, `Compra ${compra.numero}`))
   }
-  lineas.push(lineaDebe(CODIGOS.IVA_CREDITO, compra.iva, `IVA crédito ${compra.numero}`))
+  if (compra.iva > 0) {
+    lineas.push(lineaDebe(CODIGOS.IVA_CREDITO, compra.iva, `IVA crédito ${compra.numero}`))
+  }
   lineas.push(lineaHaber(CODIGOS.PROVEEDORES, compra.total, `Proveedor ${compra.numero}`))
 
   return construirAsiento({
@@ -248,7 +250,9 @@ export function generarAsientoVenta(venta: Venta, concepto?: string): Asiento {
   for (const [cuentaId, importe] of ingresos) {
     lineas.push(lineaHaber(cuentaId, importe, `Venta ${venta.numero}`))
   }
-  lineas.push(lineaHaber(CODIGOS.IVA_DEBITO, venta.iva, `IVA débito ${venta.numero}`))
+  if (venta.iva > 0) {
+    lineas.push(lineaHaber(CODIGOS.IVA_DEBITO, venta.iva, `IVA débito ${venta.numero}`))
+  }
 
   let costoTotal = 0
   for (const [cuentaId, importe] of costos) {

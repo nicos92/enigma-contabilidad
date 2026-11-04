@@ -807,3 +807,304 @@ table {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Compras ------------------------------------------------------------------ */
+.compras-resumen {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--espacio-4);
+}
+
+.compras-resumen__item {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  padding: var(--espacio-4);
+  border: var(--borde-fino);
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+  box-shadow: var(--sombra-xs);
+}
+
+.compras-resumen__item span {
+  color: var(--color-texto-suave);
+  font-size: var(--texto-sm);
+}
+
+.compras-resumen__item strong {
+  font-size: var(--texto-xl);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--peso-fuerte);
+}
+
+.compras-resumen__item small {
+  color: var(--color-texto-tenue);
+  font-size: var(--texto-xs);
+}
+
+.compras-resumen__icono {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: var(--radio-md);
+  background: var(--color-primario-suave);
+  color: var(--color-primario);
+}
+
+.compras-filtros {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.4fr) repeat(4, minmax(140px, 1fr)) auto;
+  gap: var(--espacio-3);
+  align-items: end;
+}
+
+.compras-filtros__acciones {
+  display: flex;
+  align-items: end;
+}
+
+.compras-tabla .ui-tabla-contenedor {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.compras-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  color: var(--color-primario);
+}
+
+.compras-proveedor {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.compras-proveedor small {
+  color: var(--color-texto-tenue);
+  font-size: var(--texto-xs);
+}
+
+.compras-error {
+  margin-bottom: var(--espacio-3);
+  color: var(--color-error);
+  font-size: var(--texto-sm);
+}
+
+.compras-formulario {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) 320px;
+  gap: var(--espacio-5);
+  align-items: start;
+}
+
+.compras-formulario__principal,
+.compras-formulario__lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.compras-formulario__campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-4);
+}
+
+.compras-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.compras-item {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.4fr) minmax(160px, 1.2fr) 90px 150px 110px 110px 40px;
+  gap: var(--espacio-3);
+  align-items: end;
+  padding-bottom: var(--espacio-4);
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.compras-item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.compras-item__subtotal {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--texto-sm);
+}
+
+.compras-totales {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+
+.compras-totales__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  padding: var(--espacio-2) 0;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.compras-totales__fila--total {
+  border-bottom: 0;
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-fuerte);
+}
+
+.compras-aviso {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  margin-top: var(--espacio-4);
+  padding: var(--espacio-3);
+  border: 1px dashed var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-superficie-suave);
+  color: var(--color-texto-suave);
+  font-size: var(--texto-sm);
+}
+
+.compras-datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-3);
+}
+
+.compras-datos dt {
+  color: var(--color-texto-tenue);
+  font-size: var(--texto-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.compras-datos dd {
+  margin-top: 2px;
+  font-size: var(--texto-md);
+}
+
+.compras-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.compras-detalle__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+.compras-detalle__items {
+  overflow-x: auto;
+}
+
+.compras-detalle__totales {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.compras-pagos ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+
+.compras-pagos li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-sm);
+  background: var(--color-superficie-suave);
+}
+
+.compras-formulario__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espacio-2);
+}
+
+@media (max-width: 1080px) {
+  .compras-formulario {
+    grid-template-columns: 1fr;
+  }
+
+  .compras-item {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .compras-filtros {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .compras-resumen {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .compras-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .compras-filtros {
+    grid-template-columns: 1fr;
+  }
+
+  .compras-item {
+    grid-template-columns: 1fr;
+  }
+
+  .compras-formulario__campos {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Impresión de factura recibida ------------------------------------------- */
+@media print {
+  body.imprimiendo-factura {
+    background: #fff;
+  }
+
+  body.imprimiendo-factura .app-sidebar,
+  body.imprimiendo-factura .app-topbar,
+  body.imprimiendo-factura .app-statusbar,
+  body.imprimiendo-factura .ui-modal__cabecera,
+  body.imprimiendo-factura .ui-modal__pie {
+    display: none !important;
+  }
+
+  body.imprimiendo-factura .ui-modal-overlay {
+    position: static !important;
+    background: #fff !important;
+    padding: 0 !important;
+  }
+
+  body.imprimiendo-factura .ui-modal {
+    box-shadow: none !important;
+    border: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  body.imprimiendo-factura .documento {
+    box-shadow: none;
+    margin: 0;
+  }
+}

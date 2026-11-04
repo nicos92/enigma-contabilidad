@@ -40,7 +40,7 @@ describe('App', () => {
 
     expect(window.location.hash).toBe('#/compras')
     expect(wrapper.get('.app-topbar__title').text()).toBe('Compras')
-    expect(wrapper.text()).toContain('Módulo en preparación')
+    expect(wrapper.text()).toContain('Comprobantes recibidos')
   })
 
   it('expone el catálogo interno de componentes en /ui-kit', async () => {

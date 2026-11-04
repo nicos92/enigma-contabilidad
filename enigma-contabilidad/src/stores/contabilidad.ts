@@ -14,14 +14,43 @@ import {
   derivarStock,
   siguienteNumeroAsiento,
 } from '@/core/contabilidad'
+import {
+  generarCompra,
+  siguienteIdCompra,
+  siguienteNumeroComprobanteCompra,
+  type DatosNuevaCompra,
+} from '@/core/compras'
 import { cargarEstado, guardarEstado, restaurarEstadoDemo } from '@/core/persistencia'
 import { crearEstadoDemo } from '@/data/demo'
 import type {
   Asiento,
+  Compra,
   DatosEmpresa,
+  DocumentoContable,
   EstadoContable,
+  ItemCompra,
+  Proveedor,
   ResultadoAprobacion,
 } from '@/types/contabilidad'
+import type { FechaISO } from '@/types'
+
+export interface EntradaRegistroCompra {
+  proveedor: Proveedor
+  fecha: FechaISO
+  vencimiento: FechaISO
+  tipoComprobante: string
+  numero?: string
+  condicionPago: Compra['condicionPago']
+  items: ItemCompra[]
+}
+
+export interface ResultadoRegistroCompra {
+  ok: boolean
+  motivo?: 'numero_duplicado' | 'datos_invalidos'
+  compra?: Compra
+  documento?: DocumentoContable
+  asiento?: Asiento
+}
 
 /**
  * Estado central de la demo. Toda la información contable se deriva de los
@@ -208,6 +237,49 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
     }
   }
 
+  /**
+   * Registra una compra completa, su factura recibida y el asiento propuesto.
+   * El documento queda pendiente en la bandeja de Contaduría hasta que se
+   * apruebe desde ese módulo.
+   */
+  function registrarCompra(datos: EntradaRegistroCompra): ResultadoRegistroCompra {
+    const numero =
+      datos.numero?.trim() ||
+      siguienteNumeroComprobanteCompra(estado.value.compras, datos.tipoComprobante)
+
+    if (estado.value.compras.some((compra) => compra.numero === numero)) {
+      return { ok: false, motivo: 'numero_duplicado' }
+    }
+
+    const id = siguienteIdCompra(estado.value.compras)
+    const datosCompletos: DatosNuevaCompra = {
+      proveedor: datos.proveedor,
+      fecha: datos.fecha,
+      vencimiento: datos.vencimiento,
+      tipoComprobante: datos.tipoComprobante,
+      numero,
+      condicionPago: datos.condicionPago,
+      items: datos.items,
+    }
+
+    try {
+      const generada = generarCompra(datosCompletos, id)
+      estado.value.compras.push(generada.compra)
+      estado.value.asientos.push(generada.asiento)
+      estado.value.documentos.push(generada.documento)
+      persistir()
+
+      return {
+        ok: true,
+        compra: generada.compra,
+        documento: generada.documento,
+        asiento: generada.asiento,
+      }
+    } catch {
+      return { ok: false, motivo: 'datos_invalidos' }
+    }
+  }
+
   /** Actualiza los datos institucionales de la empresa y los persiste. */
   function actualizarEmpresa(cambios: Partial<DatosEmpresa>): void {
     estado.value.empresa = { ...estado.value.empresa, ...cambios }
@@ -243,6 +315,7 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
     saldosClientes,
     saldoCuenta,
     aprobarDocumento,
+    registrarCompra,
     actualizarEmpresa,
     restaurarDemo,
     reiniciarEnMemoria,
