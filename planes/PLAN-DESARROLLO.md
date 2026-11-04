@@ -7,9 +7,9 @@
 **Cliente ficticio de la demo:** Comercializadora del Sur S.R.L.
 **Período de los datos:** noviembre de 2026
 **Última actualización:** 04/11/2026
-**Estado general:** Fase 5 completada — compras
-**Fases completadas:** 6 / 15
-**Próxima fase:** F6 — Ventas
+**Estado general:** Fase 6 completada — ventas
+**Fases completadas:** 7 / 15
+**Próxima fase:** F7 — Maestros
 
 ---
 
@@ -139,7 +139,7 @@ En las tareas:
 | F3 | Sistema visual y layout | Design system, sidebar, topbar y UI kit | Completado | 100% |
 | F4 | Dashboard | Panel general con indicadores y gráficos | Completado | 100% |
 | F5 | Compras | Listado, formulario, factura y estados | Completado | 100% |
-| F6 | Ventas | Listado, formulario, factura y cobranza | Pendiente | 0% |
+| F6 | Ventas | Listado, formulario, factura y cobranza | Completado | 100% |
 | F7 | Maestros | Proveedores, clientes y productos | Pendiente | 0% |
 | F8 | Tesorería | Pagos, cobros, movimientos y transferencias | Pendiente | 0% |
 | F9 | Contaduría | Bandeja, asientos y plan de cuentas | Pendiente | 0% |
@@ -437,20 +437,20 @@ En las tareas:
 
 ### F6 — Ventas
 
-**Estado:** Pendiente
+**Estado:** Completado
 **Depende de:** F2, F3
 **Objetivo:** administrar ventas, facturación y estado de cobranza.
 
 **Tareas**
 
-- [ ] Crear listado con búsqueda por cliente y filtros por fecha y estado.
-- [ ] Crear formulario con cliente, CUIT, fecha, tipo y número de comprobante, condición de venta, ítems, cantidad, precio, IVA, subtotal y total.
-- [ ] Implementar validaciones y cálculo automático.
-- [ ] Crear factura emitida simulada e imprimible.
-- [ ] Actualizar cuenta por cobrar y estado de cobranza.
-- [ ] Registrar costo de ventas y movimiento de mercaderías.
-- [ ] Enviar la operación a la bandeja de Contaduría.
-- [ ] Persistir y reflejar en dashboard e informes.
+- [x] Crear listado con búsqueda por cliente y filtros por fecha y estado.
+- [x] Crear formulario con cliente, CUIT, fecha, tipo y número de comprobante, condición de venta, ítems, cantidad, precio, IVA, subtotal y total.
+- [x] Implementar validaciones y cálculo automático.
+- [x] Crear factura emitida simulada e imprimible.
+- [x] Actualizar cuenta por cobrar y estado de cobranza.
+- [x] Registrar costo de ventas y movimiento de mercaderías.
+- [x] Enviar la operación a la bandeja de Contaduría.
+- [x] Persistir y reflejar en dashboard e informes.
 
 **Entregable:** módulo de ventas operativo.
 
@@ -768,6 +768,7 @@ Recorrido que debe poder hacerse frente al cliente:
 | 03/11/2026 | F2 | Derivaciones Diario → Mayor → Balance → ER/ESP, tesorería, stock y terceros implementadas. | Completado |
 | 03/11/2026 | F2 | Persistencia versionada en `localStorage`, restauración demo y aprobación idempotente implementadas. | Completado |
 | 03/11/2026 | F2 | 49 tests aprobados; `typecheck`, `lint` y `format:check` sin errores. | Completado |
+| 04/11/2026 | F6 | Módulo de ventas implementado: listado, formulario, factura emitida, cuenta por cobrar y asiento balanceado. | Completado |
 
 ---
 
