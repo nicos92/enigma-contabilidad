@@ -7,9 +7,9 @@
 **Cliente ficticio de la demo:** Comercializadora del Sur S.R.L.
 **Período de los datos:** noviembre de 2026
 **Última actualización:** 04/11/2026
-**Estado general:** Fase 3 completada — sistema visual y layout
-**Fases completadas:** 4 / 15
-**Próxima fase:** F4 — Dashboard
+**Estado general:** Fase 4 completada — dashboard
+**Fases completadas:** 5 / 15
+**Próxima fase:** F5 — Compras
 
 ---
 
@@ -137,7 +137,7 @@ En las tareas:
 | F1 | Scaffold del proyecto | Proyecto Vue 3 + TS + Vite funcionando | Completado | 100% |
 | F2 | Dominio, datos y motor contable | Tipos, seed, asientos y persistencia | Completado | 100% |
 | F3 | Sistema visual y layout | Design system, sidebar, topbar y UI kit | Completado | 100% |
-| F4 | Dashboard | Panel general con indicadores y gráficos | Pendiente | 0% |
+| F4 | Dashboard | Panel general con indicadores y gráficos | Completado | 100% |
 | F5 | Compras | Listado, formulario, factura y estados | Pendiente | 0% |
 | F6 | Ventas | Listado, formulario, factura y cobranza | Pendiente | 0% |
 | F7 | Maestros | Proveedores, clientes y productos | Pendiente | 0% |
@@ -350,23 +350,38 @@ En las tareas:
 
 ### F4 — Dashboard
 
-**Estado:** Pendiente
+**Estado:** Completado
 **Depende de:** F2, F3
 **Objetivo:** construir la pantalla de inicio con visión general de la empresa.
 
 **Tareas**
 
-- [ ] Crear tarjetas de ventas, compras, cuentas por cobrar, cuentas por pagar, saldo disponible y resultado.
-- [ ] Calcular todos los indicadores desde los datos, sin valores hardcodeados.
-- [ ] Crear gráfico de ingresos y egresos por semana de noviembre.
-- [ ] Crear listado de últimas operaciones.
-- [ ] Crear panel de documentos pendientes de aprobación.
-- [ ] Crear panel de operaciones pendientes de registración.
-- [ ] Crear accesos rápidos a compras, ventas, pagos y cobros.
-- [ ] Agregar acceso al recorrido guiado.
-- [ ] Verificar coherencia entre los KPI y los módulos.
+- [x] Crear tarjetas de ventas, compras, cuentas por cobrar, cuentas por pagar, saldo disponible y resultado.
+- [x] Calcular todos los indicadores desde los datos, sin valores hardcodeados.
+- [x] Crear gráfico de ingresos y egresos por semana de noviembre.
+- [x] Crear listado de últimas operaciones.
+- [x] Crear panel de documentos pendientes de aprobación.
+- [x] Crear panel de operaciones pendientes de registración.
+- [x] Crear accesos rápidos a compras, ventas, pagos y cobros.
+- [x] Agregar acceso al recorrido guiado.
+- [x] Verificar coherencia entre los KPI y los módulos.
 
 **Entregable:** dashboard completo y navegable.
+
+**Evidencia**
+
+- `src/views/DashboardView.vue`: panel con seis KPI navegables, gráfico, últimas operaciones, pendientes, accesos rápidos y modal de recorrido guiado.
+- `src/core/dashboard.ts`: derivación pura de indicadores, agrupación semanal de flujo de fondos, últimas operaciones y pendientes. No hay importes fijos.
+- `src/components/dashboard/GraficoIngresosEgresos.vue`: gráfico de barras con Chart.js y tabla alternativa accesible cuando no hay contexto de canvas.
+- `src/css/styles.css`: estilos del dashboard con grilla responsive de 6 → 3 → 2 → 1 columnas y adaptación del panel lateral.
+- Indicadores del seed, en centavos: ventas `1.116.225.000`; compras `1.724.855.000`; cuentas por cobrar `355.175.000`; cuentas por pagar `613.765.000`; saldo disponible `647.460.000`; resultado del ejercicio `87.875.000`.
+- El gráfico usa exclusivamente movimientos de caja y banco del período, sin apertura ni transferencias internas. Se agrupa en cinco semanas: ingresos `761.050.000` y egresos `1.113.590.000`.
+- El listado muestra las ocho operaciones más recientes, ordenadas por fecha descendente, con enlace a su módulo de origen.
+- Los dos documentos pendientes enlazan a `#/contaduria?vista=bandeja&documento=...`; los dos asientos propuestos enlazan a `#/contaduria?vista=asientos&asiento=...`.
+- Accesos rápidos verificados: `#/compras?vista=nueva`, `#/ventas?vista=nueva`, `#/tesoreria?vista=pagos&accion=nuevo` y `#/tesoreria?vista=cobros&accion=nuevo`.
+- El recorrido guiado abre un modal con cinco etapas enlazadas: compras/ventas, tesorería, contaduría, libros y balances.
+- Tests nuevos en `src/core/dashboard.spec.ts` y `src/views/DashboardView.spec.ts`: 74 pruebas en 11 archivos, todas aprobadas.
+- `pnpm typecheck`, `pnpm lint`, `pnpm format:check` y `pnpm build` terminan sin errores.
 
 **Criterio de aceptación**
 
