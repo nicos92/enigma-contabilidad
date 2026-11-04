@@ -1,26 +1,36 @@
 <script setup lang="ts">
+import { RouterLink } from 'vue-router'
+import AppBadge from '@/components/ui/AppBadge.vue'
+import AppCard from '@/components/ui/AppCard.vue'
+
 const estadoProyecto = [
   {
     titulo: 'Aplicación base',
     estado: 'Listo',
+    tipo: 'exito' as const,
     detalle: 'Vite 8, Vue 3, TypeScript estricto, router y Pinia configurados.',
   },
   {
     titulo: 'Datos y motor contable',
-    estado: 'Fase 2',
+    estado: 'Verificado',
+    tipo: 'exito' as const,
     detalle: 'Plan de cuentas, datos demo y derivación de libros y balances.',
   },
   {
-    titulo: 'Experiencia visual',
-    estado: 'Fases 3 y 4',
-    detalle: 'Design system, layout definitivo y dashboard con indicadores.',
+    titulo: 'Sistema visual',
+    estado: 'Fase 3',
+    tipo: 'marca' as const,
+    detalle: 'Tokens, layout responsive, componentes reutilizables y UI kit.',
   },
   {
     titulo: 'Circuito operativo',
-    estado: 'Fases 5 a 13',
+    estado: 'Próximas fases',
+    tipo: 'advertencia' as const,
     detalle: 'Compras, ventas, tesorería, contaduría, libros, balances e informes.',
   },
 ]
+
+const stack = ['Vue 3.5', 'TypeScript 6', 'Vite 8', 'Vue Router 5', 'Pinia 4', 'Chart.js 4']
 </script>
 
 <template>
@@ -29,35 +39,34 @@ const estadoProyecto = [
       <div>
         <h2>Bienvenido a Enigma Gestión</h2>
         <p class="page__lead">
-          Base del prototipo de gestión contable para Enigma Solutions. La aplicación ya arranca,
-          compila y ejecuta sus pruebas de humo.
+          Prototipo de gestión contable para Enigma Solutions. El shell, los datos de demostración y
+          el motor contable ya están preparados para recorrer el circuito completo de una operación.
         </p>
       </div>
-      <span class="badge badge--exito">Scaffold verificado</span>
+      <div class="page__actions">
+        <AppBadge tipo="exito" punto>Motor contable verificado</AppBadge>
+        <RouterLink class="ui-button ui-button--secundario ui-button--sm" to="/ui-kit">
+          Revisar UI Kit
+        </RouterLink>
+      </div>
     </div>
 
-    <div class="card-grid">
-      <article v-for="item in estadoProyecto" :key="item.titulo" class="card">
-        <header class="card__header">
-          <h3>{{ item.titulo }}</h3>
-          <span class="badge">{{ item.estado }}</span>
-        </header>
-        <p>{{ item.detalle }}</p>
-      </article>
+    <div class="demo-grid">
+      <AppCard v-for="item in estadoProyecto" :key="item.titulo" :titulo="item.titulo" interactiva>
+        <template #acciones>
+          <AppBadge :tipo="item.tipo">{{ item.estado }}</AppBadge>
+        </template>
+        <p class="texto-suave">{{ item.detalle }}</p>
+      </AppCard>
     </div>
 
-    <section class="card">
-      <h3>Stack del proyecto</h3>
-      <ul class="chip-list">
-        <li class="chip">Vue 3.5</li>
-        <li class="chip">TypeScript 6</li>
-        <li class="chip">Vite 8</li>
-        <li class="chip">Vue Router 5</li>
-        <li class="chip">Pinia 4</li>
-        <li class="chip">Chart.js 4</li>
-        <li class="chip">Vitest 5</li>
-        <li class="chip">Inter</li>
+    <AppCard
+      titulo="Stack del proyecto"
+      descripcion="Tecnologías fijadas y verificadas en las fases 0 y 1."
+    >
+      <ul class="demo-row" aria-label="Tecnologías del proyecto">
+        <li v-for="tecnologia in stack" :key="tecnologia" class="ui-chip">{{ tecnologia }}</li>
       </ul>
-    </section>
+    </AppCard>
   </section>
 </template>

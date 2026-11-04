@@ -1,0 +1,137 @@
+/**
+ * Tokens de diseño de Enigma Gestión.
+ * Toda la interfaz consume estas variables para mantener consistencia entre
+ * módulos, estados y tamaños de pantalla.
+ */
+:root {
+  color-scheme: light;
+
+  /* Tipografía ------------------------------------------------------------ */
+  --fuente-base: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fuente-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  --texto-xs: 0.6875rem;
+  --texto-sm: 0.75rem;
+  --texto-md: 0.8125rem;
+  --texto-base: 0.875rem;
+  --texto-lg: 1rem;
+  --texto-xl: 1.125rem;
+  --texto-2xl: 1.375rem;
+  --texto-3xl: 1.75rem;
+  --peso-normal: 400;
+  --peso-medio: 500;
+  --peso-semi: 600;
+  --peso-fuerte: 700;
+  --interlineado: 1.5;
+
+  /* Colores de marca ------------------------------------------------------ */
+  --color-marca-50: #eef4ff;
+  --color-marca-100: #dce8ff;
+  --color-marca-200: #b9ceff;
+  --color-marca-300: #8bafff;
+  --color-marca-400: #5c8bf5;
+  --color-marca-500: #2f68e0;
+  --color-marca-600: #2456d6;
+  --color-marca-700: #1d46b2;
+  --color-marca-800: #193a8f;
+  --color-marca-900: #162f70;
+
+  /* Superficies y texto --------------------------------------------------- */
+  --color-fondo: #f3f5fa;
+  --color-fondo-alterno: #eef1f8;
+  --color-superficie: #ffffff;
+  --color-superficie-suave: #f8faff;
+  --color-superficie-elevada: #ffffff;
+  --color-borde: #dee4ee;
+  --color-borde-suave: #ebeff6;
+  --color-borde-fuerte: #c6cfdd;
+  --color-texto: #172033;
+  --color-texto-suave: #5a667b;
+  --color-texto-tenue: #8792a5;
+  --color-texto-inverso: #f7f9fd;
+
+  /* Estados --------------------------------------------------------------- */
+  --color-primario: var(--color-marca-600);
+  --color-primario-hover: var(--color-marca-700);
+  --color-primario-activo: var(--color-marca-800);
+  --color-primario-suave: var(--color-marca-50);
+  --color-primario-borde: var(--color-marca-200);
+
+  --color-exito: #126b42;
+  --color-exito-hover: #0d5735;
+  --color-exito-suave: #e3f5eb;
+  --color-exito-borde: #a9dfc0;
+
+  --color-advertencia: #8a5600;
+  --color-advertencia-hover: #704500;
+  --color-advertencia-suave: #fdf2d8;
+  --color-advertencia-borde: #f0cf86;
+
+  --color-error: #a32222;
+  --color-error-hover: #861b1b;
+  --color-error-suave: #fce8e8;
+  --color-error-borde: #f0b4b4;
+
+  --color-info: #0f6083;
+  --color-info-suave: #e2f3fa;
+  --color-info-borde: #a8d8ea;
+
+  /* Sidebar --------------------------------------------------------------- */
+  --color-sidebar: #0b1729;
+  --color-sidebar-elevada: #101f36;
+  --color-sidebar-borde: rgb(255 255 255 / 8%);
+  --color-sidebar-texto: #b9c4d6;
+  --color-sidebar-texto-tenue: #7d8ba2;
+  --color-sidebar-activo: #ffffff;
+  --color-sidebar-activo-fondo: rgb(63 110 232 / 20%);
+  --color-sidebar-hover: rgb(255 255 255 / 6%);
+
+  /* Espaciado ------------------------------------------------------------- */
+  --espacio-1: 0.25rem;
+  --espacio-2: 0.5rem;
+  --espacio-3: 0.75rem;
+  --espacio-4: 1rem;
+  --espacio-5: 1.25rem;
+  --espacio-6: 1.5rem;
+  --espacio-7: 1.75rem;
+  --espacio-8: 2rem;
+  --espacio-9: 2.25rem;
+  --espacio-10: 2.5rem;
+  --espacio-12: 3rem;
+  --espacio-16: 4rem;
+
+  /* Radios ---------------------------------------------------------------- */
+  --radio-xs: 4px;
+  --radio-sm: 6px;
+  --radio-md: 10px;
+  --radio-lg: 14px;
+  --radio-xl: 20px;
+  --radio-completo: 999px;
+
+  /* Sombras --------------------------------------------------------------- */
+  --sombra-xs: 0 1px 2px rgb(15 29 51 / 6%);
+  --sombra-sm: 0 2px 6px rgb(15 29 51 / 6%);
+  --sombra-md: 0 10px 28px rgb(15 29 51 / 10%);
+  --sombra-lg: 0 22px 60px rgb(15 29 51 / 18%);
+  --sombra-foco: 0 0 0 3px rgb(36 86 214 / 24%);
+
+  /* Bordes y transiciones ------------------------------------------------- */
+  --borde-fino: 1px solid var(--color-borde);
+  --borde-suave: 1px solid var(--color-borde-suave);
+  --transicion-rapida: 120ms ease;
+  --transicion-base: 180ms ease;
+  --transicion-lenta: 260ms ease;
+
+  /* Layout ---------------------------------------------------------------- */
+  --ancho-sidebar: 264px;
+  --ancho-sidebar-colapsada: 76px;
+  --alto-topbar: 76px;
+  --ancho-contenido: 1320px;
+
+  /* Capas ----------------------------------------------------------------- */
+  --capa-sidebar: 100;
+  --capa-topbar: 90;
+  --capa-overlay: 200;
+  --capa-modal: 300;
+  --capa-toast: 400;
+  --capa-tooltip: 500;
+}

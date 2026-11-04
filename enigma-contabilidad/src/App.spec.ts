@@ -42,4 +42,15 @@ describe('App', () => {
     expect(wrapper.get('.app-topbar__title').text()).toBe('Compras')
     expect(wrapper.text()).toContain('Módulo en preparación')
   })
+
+  it('expone el catálogo interno de componentes en /ui-kit', async () => {
+    const wrapper = await montarApp()
+
+    await router.push('/ui-kit')
+    await flushPromises()
+
+    expect(window.location.hash).toBe('#/ui-kit')
+    expect(wrapper.get('.app-topbar__title').text()).toBe('UI Kit')
+    expect(wrapper.text()).toContain('Catálogo interno de tokens y componentes reutilizables')
+  })
 })

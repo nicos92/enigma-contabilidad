@@ -16,7 +16,12 @@ import {
 } from '@/core/contabilidad'
 import { cargarEstado, guardarEstado, restaurarEstadoDemo } from '@/core/persistencia'
 import { crearEstadoDemo } from '@/data/demo'
-import type { Asiento, EstadoContable, ResultadoAprobacion } from '@/types/contabilidad'
+import type {
+  Asiento,
+  DatosEmpresa,
+  EstadoContable,
+  ResultadoAprobacion,
+} from '@/types/contabilidad'
 
 /**
  * Estado central de la demo. Toda la información contable se deriva de los
@@ -203,6 +208,12 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
     }
   }
 
+  /** Actualiza los datos institucionales de la empresa y los persiste. */
+  function actualizarEmpresa(cambios: Partial<DatosEmpresa>): void {
+    estado.value.empresa = { ...estado.value.empresa, ...cambios }
+    persistir()
+  }
+
   /** Reemplaza el estado actual por los datos demo originales. */
   function restaurarDemo(): void {
     estado.value = restaurarEstadoDemo()
@@ -232,6 +243,7 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
     saldosClientes,
     saldoCuenta,
     aprobarDocumento,
+    actualizarEmpresa,
     restaurarDemo,
     reiniciarEnMemoria,
     persistir,

@@ -1,78 +1,44 @@
 <script setup lang="ts">
-import {
-  BookOpenCheck,
-  ChartColumn,
-  LayoutDashboard,
-  Library,
-  ReceiptText,
-  Scale,
-  Settings,
-  ShoppingCart,
-  Users,
-  Wallet,
-} from '@lucide/vue'
-import { computed } from 'vue'
-import { RouterLink, RouterView, useRoute } from 'vue-router'
-import { useAppStore } from '@/stores/app'
+import { computed, ref } from 'vue'
+import { RouterView } from 'vue-router'
+import AppSidebar from '@/components/layout/AppSidebar.vue'
+import AppTopbar from '@/components/layout/AppTopbar.vue'
+import ToastStack from '@/components/ui/ToastStack.vue'
+import { useUiStore } from '@/stores/ui'
 
-const app = useAppStore()
-const route = useRoute()
+const ui = useUiStore()
+const main = ref<HTMLElement | null>(null)
 
-const navegacion = [
-  { to: '/dashboard', etiqueta: 'Panel general', icono: LayoutDashboard },
-  { to: '/compras', etiqueta: 'Compras', icono: ShoppingCart },
-  { to: '/ventas', etiqueta: 'Ventas', icono: ReceiptText },
-  { to: '/tesoreria', etiqueta: 'Tesorería', icono: Wallet },
-  { to: '/contaduria', etiqueta: 'Contaduría', icono: BookOpenCheck },
-  { to: '/libros', etiqueta: 'Libros contables', icono: Library },
-  { to: '/balances', etiqueta: 'Balances y estados', icono: Scale },
-  { to: '/maestros', etiqueta: 'Maestros', icono: Users },
-  { to: '/informes', etiqueta: 'Informes', icono: ChartColumn },
-  { to: '/configuracion', etiqueta: 'Configuración', icono: Settings },
-]
+const clasesShell = computed(() => ({
+  'app-shell--colapsada': ui.sidebarColapsada,
+  'app-shell--menu-abierto': ui.sidebarMovilAbierta,
+}))
 
-const tituloPagina = computed(() => route.meta.titulo ?? app.nombreProducto)
+function enfocarContenido(): void {
+  main.value?.focus()
+}
 </script>
 
 <template>
-  <div class="app-shell">
-    <aside class="app-sidebar">
-      <div class="app-brand">
-        <span class="app-brand__mark" aria-hidden="true">EG</span>
-        <span class="app-brand__text">
-          <strong>{{ app.nombreProducto }}</strong>
-          <small>{{ app.nombreEmpresa }}</small>
-        </span>
-      </div>
+  <a class="skip-link" href="#contenido-principal" @click.prevent="enfocarContenido">
+    Saltar al contenido
+  </a>
 
-      <nav class="app-nav" aria-label="Navegación principal">
-        <RouterLink
-          v-for="item in navegacion"
-          :key="item.to"
-          :to="item.to"
-          class="app-nav__link"
-          active-class="app-nav__link--activo"
-        >
-          <component :is="item.icono" :size="18" aria-hidden="true" />
-          <span>{{ item.etiqueta }}</span>
-        </RouterLink>
-      </nav>
+  <div class="app-shell" :class="clasesShell">
+    <AppSidebar />
 
-      <p class="app-sidebar__footer">Prototipo académico · {{ app.periodo }}</p>
-    </aside>
+    <div class="app-overlay" aria-hidden="true" @click="ui.cerrarMenuMovil" />
 
     <div class="app-body">
-      <header class="app-topbar">
-        <div>
-          <p class="app-topbar__eyebrow">{{ app.nombreEmpresa }}</p>
-          <h1 class="app-topbar__title">{{ tituloPagina }}</h1>
-        </div>
-        <span class="app-badge">Datos de demostración</span>
-      </header>
+      <AppTopbar />
 
-      <main class="app-main">
-        <RouterView />
+      <main id="contenido-principal" ref="main" class="app-main" tabindex="-1">
+        <div class="app-main__contenedor">
+          <RouterView />
+        </div>
       </main>
     </div>
+
+    <ToastStack />
   </div>
 </template>

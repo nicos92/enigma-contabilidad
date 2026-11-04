@@ -57,12 +57,6 @@ const modulos = [
     titulo: 'Informes',
     descripcion: 'Reportes del período y exportación de datos.',
   },
-  {
-    path: 'configuracion',
-    name: 'configuracion',
-    titulo: 'Configuración',
-    descripcion: 'Datos de la empresa, logo y restauración de la demo.',
-  },
 ] as const
 
 const routes: RouteRecordRaw[] = [
@@ -86,6 +80,24 @@ const routes: RouteRecordRaw[] = [
     },
     meta: { titulo: modulo.titulo, descripcion: modulo.descripcion },
   })),
+  {
+    path: '/configuracion',
+    name: 'configuracion',
+    component: () => import('@/views/ConfiguracionView.vue'),
+    meta: {
+      titulo: 'Configuración',
+      descripcion: 'Datos de la empresa, logo y restauración de la demo.',
+    },
+  },
+  {
+    path: '/ui-kit',
+    name: 'ui-kit',
+    component: () => import('@/views/UIKitView.vue'),
+    meta: {
+      titulo: 'UI Kit',
+      descripcion: 'Catálogo de componentes del sistema visual.',
+    },
+  },
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
