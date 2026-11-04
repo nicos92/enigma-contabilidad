@@ -6,10 +6,10 @@
 **Proyecto:** Enigma Gestión — mini ERP de demostración
 **Cliente ficticio de la demo:** Comercializadora del Sur S.R.L.
 **Período de los datos:** noviembre de 2026
-**Última actualización:** 03/11/2026
-**Estado general:** Fase 1 completada — scaffold verificado
-**Fases completadas:** 2 / 15
-**Próxima fase:** F2 — Dominio, datos y motor contable
+**Última actualización:** 04/11/2026
+**Estado general:** Fase 3 completada — sistema visual y layout
+**Fases completadas:** 4 / 15
+**Próxima fase:** F4 — Dashboard
 
 ---
 
@@ -135,8 +135,8 @@ En las tareas:
 |---|---|---|---|---:|
 | F0 | Entorno y preparación | Node, pnpm y compatibilidad con Vite 8 | Completado | 100% |
 | F1 | Scaffold del proyecto | Proyecto Vue 3 + TS + Vite funcionando | Completado | 100% |
-| F2 | Dominio, datos y motor contable | Tipos, seed, asientos y persistencia | Pendiente | 0% |
-| F3 | Sistema visual y layout | Design system, sidebar, topbar y UI kit | Pendiente | 0% |
+| F2 | Dominio, datos y motor contable | Tipos, seed, asientos y persistencia | Completado | 100% |
+| F3 | Sistema visual y layout | Design system, sidebar, topbar y UI kit | Completado | 100% |
 | F4 | Dashboard | Panel general con indicadores y gráficos | Pendiente | 0% |
 | F5 | Compras | Listado, formulario, factura y estados | Pendiente | 0% |
 | F6 | Ventas | Listado, formulario, factura y cobranza | Pendiente | 0% |
@@ -243,30 +243,48 @@ En las tareas:
 
 ### F2 — Dominio, datos y motor contable
 
-**Estado:** Pendiente
+**Estado:** Completado
 **Depende de:** F1
 **Objetivo:** construir el corazón del sistema: tipos, datos de demostración, generación de asientos y derivación de libros.
 
 **Tareas**
 
-- [ ] Definir tipos: cuentas, proveedores, clientes, productos, compras, ventas, pagos, cobros, movimientos, documentos y asientos.
-- [ ] Crear el plan de cuentas jerárquico con los códigos del prompt y las cuentas ampliadas necesarias.
-- [ ] Definir catálogos: 5 proveedores, 5 clientes y 10 productos/servicios.
-- [ ] Crear asiento de apertura con capital, banco, caja, mercaderías y equipos.
-- [ ] Crear 8 compras y 8 ventas ficticias de noviembre de 2026.
-- [ ] Crear 5 pagos y 5 cobros, incluyendo un pago parcial y un cobro parcial.
-- [ ] Crear movimientos de tesorería y al menos una transferencia interna.
-- [ ] Crear asientos propuestos y registrados coherentes.
-- [ ] Implementar generación de asiento por compra, venta, pago, cobro, transferencia y amortización.
-- [ ] Implementar aprobación idempotente: un documento no puede registrarse dos veces.
-- [ ] Implementar derivación Diario → Mayor → Balance de comprobación.
-- [ ] Implementar derivación de Estado de Situación Patrimonial y Estado de Resultados.
-- [ ] Implementar persistencia en `localStorage` con clave versionada.
-- [ ] Implementar restauración de datos originales.
-- [ ] Escribir tests de balanceo, derivación, idempotencia y ecuación contable.
-- [ ] Verificar que todos los asientos cumplan Debe = Haber.
+- [x] Definir tipos: cuentas, proveedores, clientes, productos, compras, ventas, pagos, cobros, movimientos, documentos y asientos.
+- [x] Crear el plan de cuentas jerárquico con los códigos del prompt y las cuentas ampliadas necesarias.
+- [x] Definir catálogos: 5 proveedores, 5 clientes y 10 productos/servicios.
+- [x] Crear asiento de apertura con capital, banco, caja, mercaderías y equipos.
+- [x] Crear 8 compras y 8 ventas ficticias de noviembre de 2026.
+- [x] Crear 5 pagos y 5 cobros, incluyendo un pago parcial y un cobro parcial.
+- [x] Crear movimientos de tesorería y al menos una transferencia interna.
+- [x] Crear asientos propuestos y registrados coherentes.
+- [x] Implementar generación de asiento por compra, venta, pago, cobro, transferencia y amortización.
+- [x] Implementar aprobación idempotente: un documento no puede registrarse dos veces.
+- [x] Implementar derivación Diario → Mayor → Balance de comprobación.
+- [x] Implementar derivación de Estado de Situación Patrimonial y Estado de Resultados.
+- [x] Implementar persistencia en `localStorage` con clave versionada.
+- [x] Implementar restauración de datos originales.
+- [x] Escribir tests de balanceo, derivación, idempotencia y ecuación contable.
+- [x] Verificar que todos los asientos cumplan Debe = Haber.
 
 **Entregable:** motor contable probado y datos demo coherentes.
+
+**Evidencia**
+
+- Tipos de dominio en `src/types/contabilidad.ts`; helpers monetarios en `src/core/dinero.ts` (centavos enteros).
+- Plan de cuentas jerárquico en `src/data/plan-cuentas.ts`, con cuentas de agrupación no imputables y códigos centralizados en `CODIGOS`.
+- Catálogos en `src/data/catalogos.ts`: 5 proveedores, 5 clientes, 7 productos y 3 servicios; apertura, período y amortización mensual de equipos.
+- Semilla en `src/data/demo.ts`: 8 compras, 8 ventas, 5 pagos, 5 cobros, 1 transferencia interna, apertura, amortización, liquidación de IVA y provisión de impuesto.
+- 37 asientos generados: 35 registrados y 2 propuestos (`C-008` en revisión y `V-008` pendiente). Solo los registrados alimentan los libros.
+- Pago parcial de `C-001` (350.000.000 de 617.100.000 centavos) y cobro parcial de `V-001` (150.000.000 de 302.500.000 centavos).
+- Motor en `src/core/contabilidad/asientos.ts`: generadores por operación, validación de partida doble, numeración correlativa y rechazo de asientos inválidos.
+- Derivaciones en `src/core/contabilidad/derivaciones.ts`: Diario → Mayor → Balance de comprobación → ER/ESP, además de tesorería, stock y saldos de terceros.
+- Persistencia en `src/core/persistencia.ts` con clave `enigma-gestion:estado:v1`, validación de esquema, descarte de versiones incompatibles y restauración demo.
+- Store Pinia en `src/stores/contabilidad.ts` con estado derivado y `aprobarDocumento` idempotente.
+- Tests: 49 pruebas en 6 archivos, todas aprobadas (`pnpm test`).
+- `pnpm typecheck`, `pnpm lint` y `pnpm format:check` terminan sin errores.
+- Cifras verificadas del seed: capital inicial 2.004.500.000; IVA saldo a favor 105.630.000; resultado antes de impuestos 117.166.667; impuesto 29.291.667; resultado del ejercicio 87.875.000 centavos.
+- Ecuación patrimonial verificada: Activo 2.981.431.667 = Pasivo 889.056.667 + Patrimonio Neto 2.092.375.000 centavos.
+- El valor del stock final (1.476.500.000) coincide con el saldo de Mercaderías, y los saldos de proveedores/clientes concilian con sus cuentas de control.
 
 **Criterio de aceptación**
 
@@ -286,24 +304,40 @@ En las tareas:
 
 ### F3 — Sistema visual y layout
 
-**Estado:** Pendiente
+**Estado:** Completado
 **Depende de:** F1
 **Objetivo:** definir la identidad visual y los componentes reutilizables.
 
 **Tareas**
 
-- [ ] Crear tokens CSS: colores, tipografía, espaciado, radios, sombras y estados.
-- [ ] Crear `styles.css`, `layout.css` y `components.css`.
-- [ ] Implementar sidebar con grupos, submenús, estado activo y colapso.
-- [ ] Implementar topbar con breadcrumb, búsqueda, notificaciones, usuario y período.
-- [ ] Implementar layout responsive para escritorio y tablet.
-- [ ] Crear componentes UI: botón, input, select, textarea, checkbox, badge, card, tabla, modal, confirmación, toast, tabs, paginación, empty state, tooltip y currency input.
-- [ ] Crear visor de documentos y timeline de trazabilidad.
-- [ ] Implementar foco visible, navegación por teclado y cierre de modales con Escape.
-- [ ] Crear una ruta interna `/ui-kit` para revisar componentes.
-- [ ] Reservar el espacio del logo y permitir su carga desde configuración.
+- [x] Crear tokens CSS: colores, tipografía, espaciado, radios, sombras y estados.
+- [x] Crear `styles.css`, `layout.css` y `components.css`.
+- [x] Implementar sidebar con grupos, submenús, estado activo y colapso.
+- [x] Implementar topbar con breadcrumb, búsqueda, notificaciones, usuario y período.
+- [x] Implementar layout responsive para escritorio y tablet.
+- [x] Crear componentes UI: botón, input, select, textarea, checkbox, badge, card, tabla, modal, confirmación, toast, tabs, paginación, empty state, tooltip y currency input.
+- [x] Crear visor de documentos y timeline de trazabilidad.
+- [x] Implementar foco visible, navegación por teclado y cierre de modales con Escape.
+- [x] Crear una ruta interna `/ui-kit` para revisar componentes.
+- [x] Reservar el espacio del logo y permitir su carga desde configuración.
 
 **Entregable:** shell visual completo y UI kit reutilizable.
+
+**Evidencia**
+
+- Tokens en `src/css/tokens.css`: paleta, tipografía Inter, espaciado, radios, sombras, transiciones y estados semánticos.
+- Estilos globales y utilitarios en `src/css/styles.css`; shell responsive en `src/css/layout.css`; componentes y UI kit en `src/css/components.css`. `base.css` fue reemplazado.
+- Shell en `src/App.vue` con skip link, overlay móvil, pila de notificaciones y contenido accesible.
+- Sidebar en `src/components/layout/AppSidebar.vue`: grupos, submenús con `?vista=`, estado activo, colapso persistido en `localStorage` y drawer fuera de pantalla.
+- Topbar en `src/components/layout/AppTopbar.vue`: breadcrumb, búsqueda de destinos, notificaciones derivadas de documentos pendientes, período y menú de usuario.
+- Componentes reutilizables en `src/components/ui/`: botón, input, select, textarea, checkbox, badge, card, tabla, modal, confirmación, toast, tabs, paginación, empty state, tooltip y currency input.
+- Visor documental en `DocumentViewer.vue` y timeline en `TraceTimeline.vue`, usados en el catálogo interno.
+- Modales con foco inicial, trampa de foco, cierre con Escape, bloqueo de scroll y restauración del foco previo.
+- Ruta `/ui-kit` en `src/router/index.ts` y catálogo vivo en `src/views/UIKitView.vue`, con demostración de estados normal, hover, foco, deshabilitado y error.
+- Configuración en `src/views/ConfiguracionView.vue`: carga, vista previa y eliminación del logo, persistido en `estado.empresa.logoDataUrl`.
+- Layout responsive con cortes en 1280, 1080, 960 y 640 px; por debajo de 960 px el sidebar pasa a drawer con overlay y el topbar reorganiza búsqueda y acciones.
+- Tests nuevos para `CurrencyInput`, `AppModal`, store de UI y ruta `/ui-kit`: 65 pruebas en 9 archivos, todas aprobadas.
+- `pnpm typecheck`, `pnpm lint`, `pnpm format:check` y `pnpm build` terminan sin errores.
 
 **Criterio de aceptación**
 
@@ -699,6 +733,12 @@ Recorrido que debe poder hacerse frente al cliente:
 | 03/11/2026 | F1 | Tooling configurado: Vitest, Vue Test Utils, jsdom, ESLint, Prettier, scripts y alias `@/`. | Completado |
 | 03/11/2026 | F1 | Router hash, Pinia, layout provisional y rutas de todos los módulos creados. | Completado |
 | 03/11/2026 | F1 | Verificados `dev`, `build`, `test`, `typecheck`, `lint` y `format:check`. | Completado |
+| 03/11/2026 | F2 | Tipos de dominio, helpers monetarios y plan de cuentas jerárquico creados. | Completado |
+| 03/11/2026 | F2 | Catálogos demo y semilla completa: 8 compras, 8 ventas, 5 pagos, 5 cobros y transferencia interna. | Completado |
+| 03/11/2026 | F2 | Motor de asientos con partida doble, numeración y validación implementado. | Completado |
+| 03/11/2026 | F2 | Derivaciones Diario → Mayor → Balance → ER/ESP, tesorería, stock y terceros implementadas. | Completado |
+| 03/11/2026 | F2 | Persistencia versionada en `localStorage`, restauración demo y aprobación idempotente implementadas. | Completado |
+| 03/11/2026 | F2 | 49 tests aprobados; `typecheck`, `lint` y `format:check` sin errores. | Completado |
 
 ---
 
@@ -723,4 +763,6 @@ Recorrido que debe poder hacerse frente al cliente:
 2. [x] Ejecutar smoke test de Vite 8 + Vue 3 + TypeScript.
 3. [x] Actualizar la tabla de entorno y marcar F0 como completada.
 4. [x] Completar F1: scaffold de `enigma-contabilidad/` con router, Pinia y tooling.
-5. [ ] Iniciar F2: tipos, datos demo y motor contable.
+5. [x] Completar F2: tipos, datos demo, motor contable, persistencia y tests.
+6. [x] Completar F3: design system, layout, sidebar, topbar y UI kit.
+7. [ ] Iniciar F4: dashboard con indicadores, gráficos y pendientes.
