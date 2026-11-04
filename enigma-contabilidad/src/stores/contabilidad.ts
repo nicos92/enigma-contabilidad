@@ -12,6 +12,10 @@ import {
   derivarSaldosProveedores,
   derivarSaldosTesoreria,
   derivarStock,
+  estadoCobroVenta,
+  estadoPagoCompra,
+  saldoPendienteCompra,
+  saldoPendienteVenta,
   siguienteNumeroAsiento,
 } from '@/core/contabilidad'
 import {
@@ -26,6 +30,21 @@ import {
   siguienteNumeroComprobanteVenta,
   type DatosNuevaVenta,
 } from '@/core/ventas'
+import {
+  generarPago,
+  siguienteIdPago,
+  siguienteNumeroPago,
+} from '@/core/pagos'
+import {
+  generarCobro,
+  siguienteIdCobro,
+  siguienteNumeroCobro,
+} from '@/core/cobros'
+import {
+  generarTransferencia,
+  siguienteIdTransferencia,
+  siguienteNumeroTransferencia,
+} from '@/core/transferencias'
 import { cargarEstado, guardarEstado, restaurarEstadoDemo } from '@/core/persistencia'
 import { crearEstadoDemo } from '@/data/demo'
 import { CODIGOS } from '@/data/plan-cuentas'
@@ -41,6 +60,10 @@ import type {
   Cliente,
   Producto,
   Venta,
+  Pago,
+  Cobro,
+  Transferencia,
+  MedioPago,
   ResultadoAprobacion,
 } from '@/types/contabilidad'
 import type { FechaISO } from '@/types'
@@ -77,6 +100,59 @@ export interface ResultadoRegistroVenta {
   ok: boolean
   motivo?: 'numero_duplicado' | 'datos_invalidos'
   venta?: Venta
+  documento?: DocumentoContable
+  asiento?: Asiento
+}
+
+export interface EntradaRegistroPago {
+  compra: Compra
+  proveedor: Proveedor
+  fecha: FechaISO
+  importe: number
+  medio: MedioPago
+  observaciones?: string
+  numero?: string
+}
+
+export interface ResultadoRegistroPago {
+  ok: boolean
+  motivo?: string
+  pago?: Pago
+  documento?: DocumentoContable
+  asiento?: Asiento
+}
+
+export interface EntradaRegistroCobro {
+  venta: Venta
+  cliente: Cliente
+  fecha: FechaISO
+  importe: number
+  medio: MedioPago
+  observaciones?: string
+  numero?: string
+}
+
+export interface ResultadoRegistroCobro {
+  ok: boolean
+  motivo?: string
+  cobro?: Cobro
+  documento?: DocumentoContable
+  asiento?: Asiento
+}
+
+export interface EntradaRegistroTransferencia {
+  fecha: FechaISO
+  cuentaOrigenId: string
+  cuentaDestinoId: string
+  importe: number
+  descripcion: string
+  numero?: string
+}
+
+export interface ResultadoRegistroTransferencia {
+  ok: boolean
+  motivo?: string
+  transferencia?: Transferencia
   documento?: DocumentoContable
   asiento?: Asiento
 }
@@ -344,6 +420,169 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
       return {
         ok: true,
         venta: generada.venta,
+        documento: generada.documento,
+        asiento: generada.asiento,
+      }
+    } catch {
+      return { ok: false, motivo: 'datos_invalidos' }
+    }
+  }
+
+  /**
+   * Registra un pago a proveedor, genera el comprobante y el asiento propuesto.
+   * El documento queda pendiente en la bandeja de Contaduría.
+   */
+  function registrarPago(datos: EntradaRegistroPago): ResultadoRegistroPago {
+    const saldo = saldoPendienteCompra(datos.compra, estado.value.pagos)
+    if (!Number.isInteger(datos.importe) || datos.importe <= 0) {
+      return { ok: false, motivo: 'importe_invalido' }
+    }
+    if (datos.importe > saldo) {
+      return { ok: false, motivo: 'importe_supera_saldo' }
+    }
+
+    const numero =
+      datos.numero?.trim() ||
+      siguienteNumeroPago(estado.value.pagos)
+
+    if (estado.value.pagos.some((pago) => pago.numero === numero)) {
+      return { ok: false, motivo: 'numero_duplicado' }
+    }
+
+    const id = siguienteIdPago(estado.value.pagos)
+    try {
+      const generada = generarPago(
+        {
+          compra: datos.compra,
+          proveedor: datos.proveedor,
+          fecha: datos.fecha,
+          importe: datos.importe,
+          medio: datos.medio,
+          observaciones: datos.observaciones,
+          numero,
+        },
+        id,
+      )
+
+      estado.value.pagos.push(generada.pago)
+      estado.value.asientos.push(generada.asiento)
+      estado.value.documentos.push(generada.documento)
+
+      const compraActual = estado.value.compras.find((compra) => compra.id === datos.compra.id)
+      if (compraActual) {
+        compraActual.estado = estadoPagoCompra(compraActual, estado.value.pagos)
+      }
+
+      persistir()
+      return {
+        ok: true,
+        pago: generada.pago,
+        documento: generada.documento,
+        asiento: generada.asiento,
+      }
+    } catch {
+      return { ok: false, motivo: 'datos_invalidos' }
+    }
+  }
+
+  /**
+   * Registra un cobro a cliente, genera el recibo y el asiento propuesto.
+   */
+  function registrarCobro(datos: EntradaRegistroCobro): ResultadoRegistroCobro {
+    const saldo = saldoPendienteVenta(datos.venta, estado.value.cobros)
+    if (!Number.isInteger(datos.importe) || datos.importe <= 0) {
+      return { ok: false, motivo: 'importe_invalido' }
+    }
+    if (datos.importe > saldo) {
+      return { ok: false, motivo: 'importe_supera_saldo' }
+    }
+
+    const numero =
+      datos.numero?.trim() ||
+      siguienteNumeroCobro(estado.value.cobros)
+
+    if (estado.value.cobros.some((cobro) => cobro.numero === numero)) {
+      return { ok: false, motivo: 'numero_duplicado' }
+    }
+
+    const id = siguienteIdCobro(estado.value.cobros)
+    try {
+      const generada = generarCobro(
+        {
+          venta: datos.venta,
+          cliente: datos.cliente,
+          fecha: datos.fecha,
+          importe: datos.importe,
+          medio: datos.medio,
+          observaciones: datos.observaciones,
+          numero,
+        },
+        id,
+      )
+
+      estado.value.cobros.push(generada.cobro)
+      estado.value.asientos.push(generada.asiento)
+      estado.value.documentos.push(generada.documento)
+
+      const ventaActual = estado.value.ventas.find((venta) => venta.id === datos.venta.id)
+      if (ventaActual) {
+        ventaActual.estado = estadoCobroVenta(ventaActual, estado.value.cobros)
+      }
+
+      persistir()
+      return {
+        ok: true,
+        cobro: generada.cobro,
+        documento: generada.documento,
+        asiento: generada.asiento,
+      }
+    } catch {
+      return { ok: false, motivo: 'datos_invalidos' }
+    }
+  }
+
+  /**
+   * Registra una transferencia entre cuentas de tesorería.
+   */
+  function registrarTransferencia(
+    datos: EntradaRegistroTransferencia,
+  ): ResultadoRegistroTransferencia {
+    if (datos.cuentaOrigenId === datos.cuentaDestinoId) {
+      return { ok: false, motivo: 'cuentas_iguales' }
+    }
+    if (!Number.isInteger(datos.importe) || datos.importe <= 0) {
+      return { ok: false, motivo: 'importe_invalido' }
+    }
+
+    const numero =
+      datos.numero?.trim() ||
+      siguienteNumeroTransferencia(estado.value.transferencias)
+
+    if (estado.value.transferencias.some((transferencia) => transferencia.numero === numero)) {
+      return { ok: false, motivo: 'numero_duplicado' }
+    }
+
+    const id = siguienteIdTransferencia(estado.value.transferencias)
+    try {
+      const generada = generarTransferencia(
+        {
+          fecha: datos.fecha,
+          cuentaOrigenId: datos.cuentaOrigenId,
+          cuentaDestinoId: datos.cuentaDestinoId,
+          importe: datos.importe,
+          descripcion: datos.descripcion,
+          numero,
+        },
+        id,
+      )
+
+      estado.value.transferencias.push(generada.transferencia)
+      estado.value.asientos.push(generada.asiento)
+      estado.value.documentos.push(generada.documento)
+      persistir()
+      return {
+        ok: true,
+        transferencia: generada.transferencia,
         documento: generada.documento,
         asiento: generada.asiento,
       }
@@ -706,6 +945,18 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
     aprobarDocumento,
     registrarCompra,
     registrarVenta,
+    registrarPago,
+    crearPago: registrarPago,
+    agregarPago: registrarPago,
+    guardarPago: registrarPago,
+    registrarCobro,
+    crearCobro: registrarCobro,
+    agregarCobro: registrarCobro,
+    guardarCobro: registrarCobro,
+    registrarTransferencia,
+    crearTransferencia: registrarTransferencia,
+    agregarTransferencia: registrarTransferencia,
+    guardarTransferencia: registrarTransferencia,
     actualizarEmpresa,
     restaurarDemo,
     reiniciarEnMemoria,
