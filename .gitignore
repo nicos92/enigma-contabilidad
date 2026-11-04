@@ -1,0 +1,17 @@
+# Temporales de LibreOffice
+.~lock.*#
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Dependencias y artefactos de build
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Variables de entorno
+.env
+.env.*
+!.env.example

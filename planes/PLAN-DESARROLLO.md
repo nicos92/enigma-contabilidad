@@ -1,0 +1,726 @@
+# Plan de desarrollo — Enigma Gestión
+
+> Prototipo visual e interactivo de sistema de gestión contable para **Enigma Solutions**.
+> Documento de seguimiento del desarrollo, fase por fase.
+
+**Proyecto:** Enigma Gestión — mini ERP de demostración
+**Cliente ficticio de la demo:** Comercializadora del Sur S.R.L.
+**Período de los datos:** noviembre de 2026
+**Última actualización:** 03/11/2026
+**Estado general:** Fase 1 completada — scaffold verificado
+**Fases completadas:** 2 / 15
+**Próxima fase:** F2 — Dominio, datos y motor contable
+
+---
+
+## 1. Objetivo del proyecto
+
+Construir una aplicación web de demostración que permita mostrar, frente a un cliente, cómo una operación comercial recorre todos los departamentos de una organización y termina transformada en información contable:
+
+```text
+COMPRAS / VENTAS
+       ↓
+DOCUMENTACIÓN COMERCIAL
+       ↓
+TESORERÍA
+       ↓
+CONTADURÍA
+       ↓
+LIBRO DIARIO
+       ↓
+LIBRO MAYOR
+       ↓
+BALANCE DE COMPROBACIÓN
+       ↓
+ESTADOS CONTABLES
+```
+
+La aplicación debe parecer un producto comercial, no un trabajo escolar: datos coherentes desde el primer inicio, formularios validados, documentos simulados, navegación fluida y estados contables que cierren.
+
+---
+
+## 2. Decisiones cerradas
+
+| Tema | Decisión |
+|---|---|
+| Framework | Vue 3 + TypeScript |
+| Build | Vite 8+ con servidor local (`pnpm dev` / `pnpm preview`) |
+| Estado global | Pinia |
+| Navegación | Vue Router en modo hash, sin recargas |
+| Estilos | CSS3 propio con variables de diseño; sin Tailwind |
+| Gráficos | Chart.js + vue-chartjs |
+| Iconos | Lucide |
+| Persistencia | `localStorage` versionado + opción de restaurar datos demo |
+| Backend | Ninguno |
+| Moneda | Peso argentino (ARS), importes internos en centavos |
+| Fechas | `DD/MM/AAAA` en pantalla; `YYYY-MM-DD` interno |
+| Marca | Producto **Enigma Gestión**, empresa **Enigma Solutions** |
+| Logo | Imagen del DOCX como provisoria; espacio para logo definitivo |
+| Contabilidad | Completa: inventario, costo de ventas, IVA, amortización y asiento de apertura |
+| Estados | Situación Patrimonial, Resultados, Flujo de Efectivo y Evolución del PN |
+| Build autónomo | Script opcional `build:single`; no es el flujo principal |
+
+### 2.1. Nota sobre la ejecución
+
+La entrega principal se ejecuta con Vite:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Para una versión de presentación:
+
+```bash
+pnpm build
+pnpm preview
+```
+
+El script opcional `build:single` generará un `dist/index.html` autónomo para el caso de que la consigna exija abrir el archivo con doble clic. No reemplaza el flujo normal de desarrollo.
+
+---
+
+## 3. Entorno técnico
+
+| Herramienta | Versión objetivo | Versión instalada | Estado |
+|---|---:|---:|---|
+| Node.js | 26.13.0 LTS (Lithium) | 26.13.0 | Instalado |
+| npm | 11.x | 11.20.0 | Instalado |
+| pnpm | 12.16.1 | 12.16.1 | Instalado |
+| Vite | 8.3.5 | 8.3.5 | Verificado |
+| Vue | 3.5.44 | 3.5.44 | Verificado |
+| TypeScript | 6.0.3 | 6.0.3 | Verificado |
+| @vitejs/plugin-vue | 6.0.10 | 6.0.10 | Verificado |
+| vue-tsc | 3.3.14 | 3.3.14 | Verificado |
+
+> TypeScript 7.0.2 es la última versión publicada, pero el scaffold oficial de Vite 8 utiliza TypeScript 6.0.3 para mantener compatibilidad con `vue-tsc 3.3.14`. Se prioriza una combinación estable y verificada.
+
+**Requisito de Vite 8:** Node `^20.19.0 || >=22.12.0`. Node 26.13.0 LTS cumple ampliamente.
+
+**Smoke test realizado:** proyecto temporal `/tmp/opencode/vite-smoke` con Vite 8.3.5, Vue 3.5.44, TypeScript 6.0.3 y `@vitejs/plugin-vue` 6.0.10. `pnpm build` finalizó correctamente con Node 26.13.0 y pnpm 12.16.1.
+
+> En terminales nuevas, `.zshrc` activa automáticamente la versión default de nvm (26.13.0). Si una terminal ya estaba abierta antes de la actualización, ejecutar `nvm use 26.13.0` para adoptar la nueva versión.
+
+### 3.1. Criterio de actualización del entorno
+
+- Instalar Node 26.13.0 LTS con `nvm`.
+- Dejar Node 22 instalado como respaldo.
+- Instalar pnpm 12.16.1 globalmente bajo Node 26.
+- Verificar `node -v`, `pnpm -v` y un smoke test de Vite 8 + Vue 3 + TypeScript.
+- Si alguna dependencia no es compatible con Node 26, volver a Node 24.22.2 LTS (Krypton) y registrar la decisión.
+
+---
+
+## 4. Leyenda de estados
+
+| Estado | Significado |
+|---|---|
+| `Pendiente` | No iniciada |
+| `En curso` | Se está trabajando en ella |
+| `Completado` | Cumple su criterio de aceptación y está verificada |
+| `Bloqueada` | Depende de una decisión o de otra fase |
+| `Diferida` | Fuera del alcance de esta entrega |
+
+En las tareas:
+
+- `[ ]` pendiente
+- `[x]` completada
+- `[~]` en curso
+
+---
+
+## 5. Resumen de fases
+
+| Fase | Nombre | Entregable principal | Estado | Avance |
+|---|---|---|---|---:|
+| F0 | Entorno y preparación | Node, pnpm y compatibilidad con Vite 8 | Completado | 100% |
+| F1 | Scaffold del proyecto | Proyecto Vue 3 + TS + Vite funcionando | Completado | 100% |
+| F2 | Dominio, datos y motor contable | Tipos, seed, asientos y persistencia | Pendiente | 0% |
+| F3 | Sistema visual y layout | Design system, sidebar, topbar y UI kit | Pendiente | 0% |
+| F4 | Dashboard | Panel general con indicadores y gráficos | Pendiente | 0% |
+| F5 | Compras | Listado, formulario, factura y estados | Pendiente | 0% |
+| F6 | Ventas | Listado, formulario, factura y cobranza | Pendiente | 0% |
+| F7 | Maestros | Proveedores, clientes y productos | Pendiente | 0% |
+| F8 | Tesorería | Pagos, cobros, movimientos y transferencias | Pendiente | 0% |
+| F9 | Contaduría | Bandeja, asientos y plan de cuentas | Pendiente | 0% |
+| F10 | Libros contables | Libro Diario y Libro Mayor | Pendiente | 0% |
+| F11 | Balances y estados | Comprobación, ESP, ER, flujo y evolución | Pendiente | 0% |
+| F12 | Trazabilidad | Stepper integrado y recorrido guiado | Pendiente | 0% |
+| F13 | Informes y configuración | Reportes, CSV, logo y reset | Pendiente | 0% |
+| F14 | QA y entrega | Tests, build, README y aceptación | Pendiente | 0% |
+
+---
+
+## 6. Detalle fase por fase
+
+### F0 — Entorno y preparación
+
+**Estado:** Completado
+**Depende de:** nada
+**Objetivo:** dejar el entorno listo para desarrollar con Vite 8, Vue 3 y TypeScript.
+
+**Tareas**
+
+- [x] Relevar `primer_prompt.md`, `requerimientos.md` y el borrador del TP.
+- [x] Cerrar decisiones de arquitectura, marca y alcance contable.
+- [x] Verificar los requisitos de Vite 8 (`^20.19.0 || >=22.12.0`).
+- [x] Verificar versiones actuales de Node, pnpm y dependencias.
+- [x] Instalar Node 26.13.0 LTS con `nvm`.
+- [x] Instalar pnpm 12.16.1.
+- [x] Ejecutar smoke test de Vite 8 + Vue 3 + TypeScript.
+- [x] Registrar versiones finales en este documento.
+
+**Entregable:** entorno actualizado y comprobado.
+
+**Evidencia**
+
+- `node -v` → `v26.13.0`
+- `pnpm -v` → `12.16.1`
+- `vite --version` → `vite/8.3.5 linux-x64 node-v26.13.0`
+- `pnpm build` del proyecto temporal → OK
+- Node 22 y Node 24 permanecen instalados como respaldo.
+
+**Criterio de aceptación**
+
+- `node -v` devuelve la versión LTS elegida.
+- `pnpm -v` devuelve 12.16.1 o superior.
+- Un proyecto temporal con Vite 8, Vue 3 y TypeScript compila sin errores.
+- El plan queda actualizado con las versiones reales.
+
+**Riesgos**
+
+- Node 26 puede ser demasiado nuevo para alguna dependencia nativa. Mitigación: smoke test superado; fallback disponible a Node 24.22.2 LTS.
+- El cambio de versión por defecto puede afectar otros proyectos. Mitigación: Node 22 y 24 siguen instalados y se puede cambiar con `nvm use`.
+
+---
+
+### F1 — Scaffold del proyecto
+
+**Estado:** Completado
+**Depende de:** F0
+**Objetivo:** crear la base del proyecto `enigma-contabilidad/` y dejar el ciclo de desarrollo funcionando.
+
+**Tareas**
+
+- [x] Crear `enigma-contabilidad/` con Vite + Vue + TypeScript.
+- [x] Configurar `pnpm` como gestor del proyecto.
+- [x] Configurar `tsconfig` en modo estricto y alias `@/`.
+- [x] Instalar Vue Router, Pinia, Chart.js, vue-chartjs, Lucide y la fuente Inter.
+- [x] Instalar Vitest, Vue Test Utils y jsdom.
+- [x] Configurar scripts: `dev`, `build`, `preview`, `test`, `typecheck`.
+- [x] Configurar ESLint y Prettier.
+- [x] Crear estructura `src/{router,stores,types,data,core,components,views,css}`.
+- [x] Configurar el router con `createWebHashHistory`.
+- [x] Configurar Pinia y el punto de entrada.
+- [x] Crear `App.vue` mínimo con layout provisional.
+- [x] Verificar `pnpm dev`, `pnpm build` y `pnpm test`.
+
+**Entregable:** aplicación mínima que arranca, compila y testea.
+
+**Evidencia**
+
+- Proyecto creado en `enigma-contabilidad/` con Vite 8.3.5, Vue 3.5.44 y TypeScript 6.0.3.
+- Dependencias exactas: `vue-router 5.4.0`, `pinia 4.1.0`, `chart.js 4.6.1`, `vue-chartjs 5.3.4`, `@lucide/vue 1.67.0` y `@fontsource/inter 5.3.0`.
+- Tooling de calidad: `vitest 5.1.0`, `@vue/test-utils 2.5.1`, `jsdom 30.1.3`, `eslint 10.14.0` y `prettier 3.9.10`.
+- `@lucide/vue` se usa en lugar de `lucide-vue-next`, que está deprecado por el propio paquete.
+- `pnpm dev` responde en `http://localhost:5199/` (puerto de verificación) sin errores.
+- `pnpm build` transforma 2066 módulos y genera `dist/` correctamente.
+- `pnpm preview` sirve el build en `http://localhost:5198/` (puerto de verificación) con respuesta 200.
+- `pnpm test` ejecuta 2 archivos y 3 pruebas de humo, todas aprobadas.
+- `pnpm typecheck`, `pnpm lint` y `pnpm format:check` terminan sin errores.
+- El router usa `createWebHashHistory`; una prueba verifica los hashes `#/dashboard` y `#/compras`.
+- Estructura `src/{router,stores,types,data,core,components,views,css,test}` creada, con rutas provisionales para los módulos de las fases siguientes.
+
+**Criterio de aceptación**
+
+- `pnpm dev` levanta la app sin errores.
+- `pnpm build` termina correctamente.
+- `pnpm test` ejecuta al menos un test de humo.
+- `pnpm typecheck` no reporta errores.
+- La navegación por hash funciona.
+
+---
+
+### F2 — Dominio, datos y motor contable
+
+**Estado:** Pendiente
+**Depende de:** F1
+**Objetivo:** construir el corazón del sistema: tipos, datos de demostración, generación de asientos y derivación de libros.
+
+**Tareas**
+
+- [ ] Definir tipos: cuentas, proveedores, clientes, productos, compras, ventas, pagos, cobros, movimientos, documentos y asientos.
+- [ ] Crear el plan de cuentas jerárquico con los códigos del prompt y las cuentas ampliadas necesarias.
+- [ ] Definir catálogos: 5 proveedores, 5 clientes y 10 productos/servicios.
+- [ ] Crear asiento de apertura con capital, banco, caja, mercaderías y equipos.
+- [ ] Crear 8 compras y 8 ventas ficticias de noviembre de 2026.
+- [ ] Crear 5 pagos y 5 cobros, incluyendo un pago parcial y un cobro parcial.
+- [ ] Crear movimientos de tesorería y al menos una transferencia interna.
+- [ ] Crear asientos propuestos y registrados coherentes.
+- [ ] Implementar generación de asiento por compra, venta, pago, cobro, transferencia y amortización.
+- [ ] Implementar aprobación idempotente: un documento no puede registrarse dos veces.
+- [ ] Implementar derivación Diario → Mayor → Balance de comprobación.
+- [ ] Implementar derivación de Estado de Situación Patrimonial y Estado de Resultados.
+- [ ] Implementar persistencia en `localStorage` con clave versionada.
+- [ ] Implementar restauración de datos originales.
+- [ ] Escribir tests de balanceo, derivación, idempotencia y ecuación contable.
+- [ ] Verificar que todos los asientos cumplan Debe = Haber.
+
+**Entregable:** motor contable probado y datos demo coherentes.
+
+**Criterio de aceptación**
+
+- Todos los asientos del seed están balanceados.
+- El Libro Mayor surge exclusivamente del Libro Diario.
+- El Balance de Comprobación surge exclusivamente del Mayor.
+- Activo = Pasivo + Patrimonio Neto.
+- Aprobar dos veces el mismo documento no duplica el asiento.
+- Los datos persisten entre recargas y se pueden restaurar.
+
+**Riesgos**
+
+- Diferencias de redondeo. Mitigación: importes en centavos enteros.
+- Incoherencia entre datos comerciales y contables. Mitigación: derivar todo desde el mismo estado y cubrir con tests.
+
+---
+
+### F3 — Sistema visual y layout
+
+**Estado:** Pendiente
+**Depende de:** F1
+**Objetivo:** definir la identidad visual y los componentes reutilizables.
+
+**Tareas**
+
+- [ ] Crear tokens CSS: colores, tipografía, espaciado, radios, sombras y estados.
+- [ ] Crear `styles.css`, `layout.css` y `components.css`.
+- [ ] Implementar sidebar con grupos, submenús, estado activo y colapso.
+- [ ] Implementar topbar con breadcrumb, búsqueda, notificaciones, usuario y período.
+- [ ] Implementar layout responsive para escritorio y tablet.
+- [ ] Crear componentes UI: botón, input, select, textarea, checkbox, badge, card, tabla, modal, confirmación, toast, tabs, paginación, empty state, tooltip y currency input.
+- [ ] Crear visor de documentos y timeline de trazabilidad.
+- [ ] Implementar foco visible, navegación por teclado y cierre de modales con Escape.
+- [ ] Crear una ruta interna `/ui-kit` para revisar componentes.
+- [ ] Reservar el espacio del logo y permitir su carga desde configuración.
+
+**Entregable:** shell visual completo y UI kit reutilizable.
+
+**Criterio de aceptación**
+
+- La navegación lateral funciona sin recargar.
+- El layout se adapta a 1440, 1024 y 768 px.
+- Los componentes tienen estados normal, hover, focus, disabled y error.
+- No hay estilos rotos ni scroll horizontal en escritorio.
+
+---
+
+### F4 — Dashboard
+
+**Estado:** Pendiente
+**Depende de:** F2, F3
+**Objetivo:** construir la pantalla de inicio con visión general de la empresa.
+
+**Tareas**
+
+- [ ] Crear tarjetas de ventas, compras, cuentas por cobrar, cuentas por pagar, saldo disponible y resultado.
+- [ ] Calcular todos los indicadores desde los datos, sin valores hardcodeados.
+- [ ] Crear gráfico de ingresos y egresos por semana de noviembre.
+- [ ] Crear listado de últimas operaciones.
+- [ ] Crear panel de documentos pendientes de aprobación.
+- [ ] Crear panel de operaciones pendientes de registración.
+- [ ] Crear accesos rápidos a compras, ventas, pagos y cobros.
+- [ ] Agregar acceso al recorrido guiado.
+- [ ] Verificar coherencia entre los KPI y los módulos.
+
+**Entregable:** dashboard completo y navegable.
+
+**Criterio de aceptación**
+
+- Los seis indicadores muestran importes coherentes.
+- El gráfico se alimenta de operaciones reales del sistema.
+- Los pendientes enlazan a la bandeja o al módulo correspondiente.
+- Los accesos rápidos abren el formulario correcto.
+
+---
+
+### F5 — Compras
+
+**Estado:** Pendiente
+**Depende de:** F2, F3
+**Objetivo:** administrar compras y generar la documentación recibida.
+
+**Tareas**
+
+- [ ] Crear listado con búsqueda por proveedor y filtros por fecha y estado.
+- [ ] Crear formulario con proveedor, CUIT, fecha, tipo y número de comprobante, condición de pago, ítems, cantidad, precio, IVA, subtotal y total.
+- [ ] Implementar validaciones visuales y cálculo automático.
+- [ ] Implementar numeración automática de comprobantes.
+- [ ] Crear detalle de compra.
+- [ ] Crear factura recibida simulada e imprimible.
+- [ ] Actualizar estado de pago y estado contable.
+- [ ] Enviar la operación a la bandeja de Contaduría.
+- [ ] Persistir la operación y reflejarla en el dashboard.
+
+**Entregable:** módulo de compras operativo.
+
+**Criterio de aceptación**
+
+- Se puede registrar una compra completa.
+- La factura se genera con datos correctos y leyenda de demostración.
+- La compra aparece en el listado, el dashboard y la bandeja.
+- Los importes respetan IVA y redondeo.
+
+---
+
+### F6 — Ventas
+
+**Estado:** Pendiente
+**Depende de:** F2, F3
+**Objetivo:** administrar ventas, facturación y estado de cobranza.
+
+**Tareas**
+
+- [ ] Crear listado con búsqueda por cliente y filtros por fecha y estado.
+- [ ] Crear formulario con cliente, CUIT, fecha, tipo y número de comprobante, condición de venta, ítems, cantidad, precio, IVA, subtotal y total.
+- [ ] Implementar validaciones y cálculo automático.
+- [ ] Crear factura emitida simulada e imprimible.
+- [ ] Actualizar cuenta por cobrar y estado de cobranza.
+- [ ] Registrar costo de ventas y movimiento de mercaderías.
+- [ ] Enviar la operación a la bandeja de Contaduría.
+- [ ] Persistir y reflejar en dashboard e informes.
+
+**Entregable:** módulo de ventas operativo.
+
+**Criterio de aceptación**
+
+- Se puede registrar una venta completa.
+- La factura emitida se genera correctamente.
+- El saldo del cliente y la cuenta por cobrar se actualizan.
+- El asiento de venta y costo de venta está balanceado.
+
+---
+
+### F7 — Maestros
+
+**Estado:** Pendiente
+**Depende de:** F2, F3
+**Objetivo:** consultar y administrar proveedores, clientes y productos.
+
+**Tareas**
+
+- [ ] Crear listado y ficha de proveedores con saldo y historial.
+- [ ] Crear listado y ficha de clientes con saldo y historial.
+- [ ] Crear catálogo de productos/servicios con precio, costo y alícuota de IVA.
+- [ ] Implementar alta y edición con validaciones.
+- [ ] Vincular cada ficha con sus operaciones y asientos.
+- [ ] Impedir la eliminación de maestros con operaciones asociadas.
+
+**Entregable:** maestros integrados con el resto del sistema.
+
+**Criterio de aceptación**
+
+- Los saldos de proveedores y clientes coinciden con sus operaciones.
+- Se puede crear y editar un maestro.
+- Los maestros usados no se pueden borrar sin advertencia.
+
+---
+
+### F8 — Tesorería
+
+**Estado:** Pendiente
+**Depende de:** F2, F3, F5, F6
+**Objetivo:** registrar pagos, cobros, movimientos de fondos y transferencias.
+
+**Tareas**
+
+- [ ] Crear pantalla de pagos con proveedor, factura, importe pendiente, vencimiento, medio y estado.
+- [ ] Implementar pago total y parcial con validaciones.
+- [ ] Generar comprobante de pago.
+- [ ] Actualizar saldo del proveedor.
+- [ ] Generar movimiento de tesorería y documento para Contaduría.
+- [ ] Crear pantalla de cobros con las mismas reglas.
+- [ ] Generar recibo ficticio.
+- [ ] Actualizar saldo del cliente.
+- [ ] Crear pantalla de movimientos de fondos con fecha, descripción, origen, destino, ingreso, egreso y saldo.
+- [ ] Implementar transferencias entre caja y banco.
+- [ ] Implementar filtros por cuenta y período.
+- [ ] Verificar que no se pueda pagar o cobrar más que el saldo pendiente.
+
+**Entregable:** tesorería completa y vinculada a compras/ventas/contaduría.
+
+**Criterio de aceptación**
+
+- Un pago parcial actualiza el saldo y deja la factura en estado parcial.
+- El comprobante y el movimiento se generan una sola vez.
+- La transferencia impacta en ambas cuentas.
+- Los saldos de tesorería son coherentes.
+
+---
+
+### F9 — Contaduría
+
+**Estado:** Pendiente
+**Depende de:** F2, F3, F5, F6, F8
+**Objetivo:** revisar la documentación y aprobar la registración contable.
+
+**Tareas**
+
+- [ ] Crear bandeja con fecha, documento, tipo, origen, cliente/proveedor, importe, estado y acción.
+- [ ] Implementar los estados: pendiente, en revisión, aprobado, registrado y observado.
+- [ ] Implementar filtros por origen, estado y fecha.
+- [ ] Crear detalle con documento simulado, información comercial, impuestos, cuenta sugerida y asiento propuesto.
+- [ ] Implementar aprobación y registración idempotente.
+- [ ] Implementar observación con motivo y reapertura.
+- [ ] Crear pantalla de asientos contables con filtros y detalle.
+- [ ] Crear árbol de plan de cuentas con código, nombre, tipo y naturaleza.
+- [ ] Vincular cada asiento con su documento de origen.
+- [ ] Actualizar libros y balances al registrar.
+
+**Entregable:** circuito contable completo.
+
+**Criterio de aceptación**
+
+- Aprobar una operación genera un único asiento registrado.
+- El asiento aparece en el Libro Diario y actualiza el Mayor.
+- Observar una operación no genera asiento.
+- El plan de cuentas muestra la jerarquía correctamente.
+
+---
+
+### F10 — Libros contables
+
+**Estado:** Pendiente
+**Depende de:** F9
+**Objetivo:** consultar el Libro Diario y el Libro Mayor derivados de los asientos registrados.
+
+**Tareas**
+
+- [ ] Crear Libro Diario con fecha, número, cuenta, descripción, Debe y Haber.
+- [ ] Implementar filtros por fecha, número de asiento y cuenta.
+- [ ] Mostrar totales y verificación Debe = Haber.
+- [ ] Permitir abrir el detalle del asiento.
+- [ ] Vincular cada asiento con su comprobante.
+- [ ] Crear Libro Mayor con selector de cuenta.
+- [ ] Mostrar saldo inicial, movimientos, total Debe, total Haber y saldo final.
+- [ ] Implementar filtros por período.
+- [ ] Permitir abrir el asiento original desde cada movimiento.
+- [ ] Verificar que el Mayor se derive del Diario.
+
+**Entregable:** libros contables profesionales.
+
+**Criterio de aceptación**
+
+- El Diario muestra todos los asientos registrados y ninguno propuesto.
+- Los totales coinciden.
+- El Mayor de una cuenta coincide con sus movimientos del Diario.
+- Los saldos respetan la naturaleza de cada cuenta.
+
+---
+
+### F11 — Balances y estados
+
+**Estado:** Pendiente
+**Depende de:** F10
+**Objetivo:** generar el balance de comprobación y los estados contables.
+
+**Tareas**
+
+- [ ] Crear Balance de Comprobación con código, cuenta, sumas Debe, sumas Haber, saldo deudor y saldo acreedor.
+- [ ] Mostrar totales generales y verificación de igualdad.
+- [ ] Permitir consultar el detalle de cada cuenta.
+- [ ] Crear Estado de Situación Patrimonial con activo corriente, no corriente, pasivo y patrimonio neto.
+- [ ] Verificar Activo = Pasivo + Patrimonio Neto.
+- [ ] Crear Estado de Resultados con ventas, costo, resultado bruto, gastos, resultado operativo, resultado antes de impuestos y resultado del ejercicio.
+- [ ] Crear Estado de Flujo de Efectivo.
+- [ ] Crear Estado de Evolución del Patrimonio Neto.
+- [ ] Agregar impresión de estados.
+- [ ] Verificar coherencia con los asientos registrados.
+
+**Entregable:** balances y estados contables completos.
+
+**Criterio de aceptación**
+
+- El balance de comprobación cierra.
+- La ecuación patrimonial se cumple.
+- El resultado del ejercicio coincide con el Estado de Resultados.
+- Los estados usan exclusivamente datos registrados.
+
+---
+
+### F12 — Trazabilidad y recorrido guiado
+
+**Estado:** Pendiente
+**Depende de:** F5 a F11
+**Objetivo:** demostrar visualmente el recorrido completo de una operación.
+
+**Tareas**
+
+- [ ] Crear selector de operación (compra o venta).
+- [ ] Mostrar departamento de origen, documento, autorización, tesorería, contaduría, asiento, diario, mayor y balance.
+- [ ] Implementar enlaces entre etapas.
+- [ ] Mostrar estados y fechas de cada etapa.
+- [ ] Crear recorrido guiado con los 13 pasos del criterio de aceptación.
+- [ ] Implementar modo presentación opcional.
+- [ ] Verificar que una operación nueva recorra todas las etapas.
+
+**Entregable:** pantalla de trazabilidad y demo guiada.
+
+**Criterio de aceptación**
+
+- Se puede seguir una compra desde su origen hasta el balance.
+- Se puede seguir una venta y su cobro.
+- Cada etapa enlaza a la pantalla correspondiente.
+- El recorrido guiado permite presentar sin buscar pantallas manualmente.
+
+---
+
+### F13 — Informes y configuración
+
+**Estado:** Pendiente
+**Depende de:** F2 a F11
+**Objetivo:** completar la experiencia con reportes y ajustes de la demo.
+
+**Tareas**
+
+- [ ] Crear informes de ventas por cliente, compras por proveedor, IVA del período y top de productos.
+- [ ] Agregar filtros por período.
+- [ ] Agregar exportación CSV.
+- [ ] Crear pantalla de configuración con datos de la empresa.
+- [ ] Implementar carga y previsualización de logo.
+- [ ] Implementar restauración de datos demo con confirmación.
+- [ ] Mostrar versión del esquema y uso de almacenamiento.
+- [ ] Agregar datos de usuario ficticio.
+- [ ] Verificar que la configuración persista.
+
+**Entregable:** informes y configuración funcionales.
+
+**Criterio de aceptación**
+
+- Los informes coinciden con las operaciones registradas.
+- El CSV se descarga correctamente.
+- El logo se puede cargar y se conserva.
+- La restauración devuelve el estado inicial.
+
+---
+
+### F14 — QA, build y entrega
+
+**Estado:** Pendiente
+**Depende de:** todas las anteriores
+**Objetivo:** cerrar la calidad, empaquetar y documentar la entrega.
+
+**Tareas**
+
+- [ ] Ejecutar todos los tests unitarios.
+- [ ] Verificar `pnpm typecheck`.
+- [ ] Verificar `pnpm build`.
+- [ ] Verificar `pnpm preview`.
+- [ ] Probar la aplicación en 1440, 1024 y 768 px.
+- [ ] Revisar accesibilidad básica: foco, teclado, labels y contraste.
+- [ ] Revisar que no haya botones decorativos sin acción.
+- [ ] Revisar que no haya pantallas vacías ni lorem ipsum.
+- [ ] Ejecutar el recorrido de aceptación completo.
+- [ ] Generar build autónomo opcional.
+- [ ] Escribir README con instalación, navegación, flujo contable, reset y logo.
+- [ ] Preparar carpeta final de entrega.
+- [ ] Actualizar este plan con el estado final.
+
+**Entregable:** prototipo listo para presentar.
+
+**Criterio de aceptación**
+
+- Se completan los 13 pasos del criterio final.
+- No hay errores de consola.
+- No hay diferencias entre Debe y Haber.
+- La aplicación se puede ejecutar localmente con instrucciones claras.
+
+---
+
+## 7. Requisitos transversales
+
+Estas reglas aplican a todas las fases:
+
+- [ ] Toda la interfaz en español.
+- [ ] Moneda ARS con formato `$ 1.250.000,00`.
+- [ ] Fechas `DD/MM/AAAA`.
+- [ ] Datos ficticios, sin información personal o fiscal real.
+- [ ] Sin backend, autenticación real ni integración fiscal.
+- [ ] Sin duplicación de registraciones contables.
+- [ ] Todo asiento debe cumplir Debe = Haber.
+- [ ] El Mayor se deriva del Diario.
+- [ ] El Balance se deriva del Mayor.
+- [ ] Los estados se derivan del Balance.
+- [ ] Los movimientos de tesorería se vinculan con su comprobante.
+- [ ] Los formularios tienen validaciones visuales.
+- [ ] Las tablas tienen datos, filtros y estados vacíos.
+- [ ] Las acciones destructivas piden confirmación.
+- [ ] Las notificaciones distinguen éxito, advertencia y error.
+- [ ] La interfaz es responsive para computadoras y tablets.
+- [ ] Los modales se cierran con Escape y atrapan el foco.
+- [ ] El logo no se inventa: se usa el provisto o un placeholder explícito.
+
+---
+
+## 8. Criterio de aceptación final
+
+Recorrido que debe poder hacerse frente al cliente:
+
+1. [ ] Ingresar al Dashboard.
+2. [ ] Registrar una compra.
+3. [ ] Visualizar la factura recibida.
+4. [ ] Registrar el pago al proveedor.
+5. [ ] Ingresar a Contaduría.
+6. [ ] Revisar la documentación de la operación.
+7. [ ] Aprobar y generar el asiento contable.
+8. [ ] Consultar el asiento en el Libro Diario.
+9. [ ] Seleccionar una cuenta en el Libro Mayor y visualizar el movimiento.
+10. [ ] Consultar el balance de comprobación.
+11. [ ] Realizar una operación de venta.
+12. [ ] Registrar su posterior cobro.
+13. [ ] Comprobar cómo se actualiza la información contable.
+
+**Resultado esperado:** que el cliente comprenda que el sistema conecta todos los departamentos y transforma operaciones comerciales en información contable ordenada, verificable y útil.
+
+---
+
+## 9. Registro de avances
+
+| Fecha | Fase | Cambio | Estado |
+|---|---|---|---|
+| 03/11/2026 | F0 | Relevamiento del prompt, requerimientos y borrador del TP. | Completado |
+| 03/11/2026 | F0 | Decisiones de stack, marca, contabilidad y estados cerradas. | Completado |
+| 03/11/2026 | F0 | Verificación de Vite 8.3.5 y requisitos de Node. | Completado |
+| 03/11/2026 | F0 | Plan de desarrollo creado en `planes/PLAN-DESARROLLO.md`. | Completado |
+| 03/11/2026 | F0 | Node actualizado a 26.13.0 LTS y configurado como default en `.zshrc`. | Completado |
+| 03/11/2026 | F0 | pnpm actualizado a 12.16.1. | Completado |
+| 03/11/2026 | F0 | Smoke test de Vite 8.3.5 + Vue 3.5.44 + TypeScript 6.0.3 con `pnpm build`. | Completado |
+| 03/11/2026 | F1 | Proyecto `enigma-contabilidad/` creado con Vite 8.3.5, Vue 3.5.44 y TypeScript 6.0.3. | Completado |
+| 03/11/2026 | F1 | Dependencias instaladas: Vue Router 5.4.0, Pinia 4.1.0, Chart.js, vue-chartjs, `@lucide/vue` e Inter. | Completado |
+| 03/11/2026 | F1 | Tooling configurado: Vitest, Vue Test Utils, jsdom, ESLint, Prettier, scripts y alias `@/`. | Completado |
+| 03/11/2026 | F1 | Router hash, Pinia, layout provisional y rutas de todos los módulos creados. | Completado |
+| 03/11/2026 | F1 | Verificados `dev`, `build`, `test`, `typecheck`, `lint` y `format:check`. | Completado |
+
+---
+
+## 10. Riesgos y notas abiertas
+
+| Riesgo | Impacto | Mitigación |
+|---|---|---|
+| Node 26 incompatible con alguna dependencia | Medio | Smoke test superado; Node 24.22.2 LTS disponible como fallback |
+| Cambios de major en Vue Router 5 / Pinia 4 | Bajo | Versiones exactas fijadas y validadas en F1 (vue-router 5.4.0, pinia 4.1.0) |
+| La imagen del DOCX no sea el logo definitivo | Bajo | Placeholder explícito y carga desde Configuración |
+| Vite estándar no abre con `file://` | Medio | Script opcional `build:single` y README claro |
+| Incoherencia de datos demo | Alto | Motor derivado + tests de invariantes |
+| Redondeo de importes | Medio | Importes internos en centavos |
+| Falta de tiempo para todas las fases | Medio | Fases independientes; priorizar recorrido de aceptación |
+| Pérdida de datos por cambio de esquema | Bajo | Clave de localStorage versionada y reset |
+
+---
+
+## 11. Próximos pasos inmediatos
+
+1. [x] Completar F0: instalar Node 26.13.0 LTS y pnpm 12.16.1.
+2. [x] Ejecutar smoke test de Vite 8 + Vue 3 + TypeScript.
+3. [x] Actualizar la tabla de entorno y marcar F0 como completada.
+4. [x] Completar F1: scaffold de `enigma-contabilidad/` con router, Pinia y tooling.
+5. [ ] Iniciar F2: tipos, datos demo y motor contable.
