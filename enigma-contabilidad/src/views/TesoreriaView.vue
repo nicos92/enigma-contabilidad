@@ -22,11 +22,7 @@ import AppTabs from '@/components/ui/AppTabs.vue'
 import CurrencyInput from '@/components/ui/CurrencyInput.vue'
 import DataTable from '@/components/ui/DataTable.vue'
 
-import type {
-  ColumnaTabla,
-  OpcionSelect,
-  TabItem,
-} from '@/components/ui/tipos'
+import type { ColumnaTabla, OpcionSelect, TabItem } from '@/components/ui/tipos'
 import {
   MEDIOS_PAGO,
   etiquetaMedioPago,
@@ -122,7 +118,13 @@ const pagosPagina = computed(() => {
 })
 
 watch(
-  () => [filtrosPago.texto, filtrosPago.desde, filtrosPago.hasta, filtrosPago.medio, filtrosPago.estadoContable],
+  () => [
+    filtrosPago.texto,
+    filtrosPago.desde,
+    filtrosPago.hasta,
+    filtrosPago.medio,
+    filtrosPago.estadoContable,
+  ],
   () => {
     paginaPago.value = 1
   },
@@ -265,7 +267,11 @@ function abrirFormularioPago(): void {
 async function registrarPagoForm(): Promise<void> {
   intentoPago.value = true
   if (hayErroresPago(erroresPagoForm.value)) {
-    ui.notificar({ tipo: 'error', titulo: 'Revisá los datos del pago', mensaje: 'Hay campos inválidos.' })
+    ui.notificar({
+      tipo: 'error',
+      titulo: 'Revisá los datos del pago',
+      mensaje: 'Hay campos inválidos.',
+    })
     return
   }
   const compra = compraPagoSeleccionada.value
@@ -284,7 +290,11 @@ async function registrarPagoForm(): Promise<void> {
   guardandoPago.value = false
 
   if (!resultado.ok) {
-    ui.notificar({ tipo: 'error', titulo: 'No se pudo registrar el pago', mensaje: resultado.motivo ?? '' })
+    ui.notificar({
+      tipo: 'error',
+      titulo: 'No se pudo registrar el pago',
+      mensaje: resultado.motivo ?? '',
+    })
     return
   }
   ui.notificar({ tipo: 'exito', titulo: 'Pago registrado', mensaje: resultado.pago?.numero ?? '' })
@@ -318,7 +328,13 @@ const cobrosPagina = computed(() => {
 })
 
 watch(
-  () => [filtrosCobro.texto, filtrosCobro.desde, filtrosCobro.hasta, filtrosCobro.medio, filtrosCobro.estadoContable],
+  () => [
+    filtrosCobro.texto,
+    filtrosCobro.desde,
+    filtrosCobro.hasta,
+    filtrosCobro.medio,
+    filtrosCobro.estadoContable,
+  ],
   () => {
     paginaCobro.value = 1
   },
@@ -448,7 +464,11 @@ function abrirFormularioCobro(): void {
 async function registrarCobroForm(): Promise<void> {
   intentoCobro.value = true
   if (hayErroresCobro(erroresCobroForm.value)) {
-    ui.notificar({ tipo: 'error', titulo: 'Revisá los datos del cobro', mensaje: 'Hay campos inválidos.' })
+    ui.notificar({
+      tipo: 'error',
+      titulo: 'Revisá los datos del cobro',
+      mensaje: 'Hay campos inválidos.',
+    })
     return
   }
   const venta = ventaCobroSeleccionada.value
@@ -467,10 +487,18 @@ async function registrarCobroForm(): Promise<void> {
   guardandoCobro.value = false
 
   if (!resultado.ok) {
-    ui.notificar({ tipo: 'error', titulo: 'No se pudo registrar el cobro', mensaje: resultado.motivo ?? '' })
+    ui.notificar({
+      tipo: 'error',
+      titulo: 'No se pudo registrar el cobro',
+      mensaje: resultado.motivo ?? '',
+    })
     return
   }
-  ui.notificar({ tipo: 'exito', titulo: 'Cobro registrado', mensaje: resultado.cobro?.numero ?? '' })
+  ui.notificar({
+    tipo: 'exito',
+    titulo: 'Cobro registrado',
+    mensaje: resultado.cobro?.numero ?? '',
+  })
   mostrarFormularioCobro.value = false
 }
 
@@ -480,7 +508,11 @@ async function registrarCobroForm(): Promise<void> {
 
 const filtrosMovimiento = reactive<FiltrosTransferencia>(filtrosTransferenciaVacios())
 const movimientosFiltrados = computed(() =>
-  filtrarTransferencias(contabilidad.estado.transferencias, contabilidad.estado.documentos, filtrosMovimiento),
+  filtrarTransferencias(
+    contabilidad.estado.transferencias,
+    contabilidad.estado.documentos,
+    filtrosMovimiento,
+  ),
 )
 
 const saldosTesoreria = computed(() => contabilidad.saldosTesoreria)
@@ -535,7 +567,11 @@ function abrirFormularioTransferencia(): void {
 async function registrarTransferenciaForm(): Promise<void> {
   intentoTransferencia.value = true
   if (hayErroresTransferencia(erroresTransferenciaForm.value)) {
-    ui.notificar({ tipo: 'error', titulo: 'Revisá los datos de la transferencia', mensaje: 'Hay campos inválidos.' })
+    ui.notificar({
+      tipo: 'error',
+      titulo: 'Revisá los datos de la transferencia',
+      mensaje: 'Hay campos inválidos.',
+    })
     return
   }
 
@@ -550,10 +586,18 @@ async function registrarTransferenciaForm(): Promise<void> {
   guardandoTransferencia.value = false
 
   if (!resultado.ok) {
-    ui.notificar({ tipo: 'error', titulo: 'No se pudo registrar la transferencia', mensaje: resultado.motivo ?? '' })
+    ui.notificar({
+      tipo: 'error',
+      titulo: 'No se pudo registrar la transferencia',
+      mensaje: resultado.motivo ?? '',
+    })
     return
   }
-  ui.notificar({ tipo: 'exito', titulo: 'Transferencia registrada', mensaje: resultado.transferencia?.numero ?? '' })
+  ui.notificar({
+    tipo: 'exito',
+    titulo: 'Transferencia registrada',
+    mensaje: resultado.transferencia?.numero ?? '',
+  })
   mostrarFormularioTransferencia.value = false
 }
 
@@ -571,12 +615,12 @@ const cobroDetalleId = ref<string | null>(null)
 
 const pagoDetalle = computed(() =>
   pagoDetalleId.value
-    ? contabilidad.estado.pagos.find((pago) => pago.id === pagoDetalleId.value) ?? null
+    ? (contabilidad.estado.pagos.find((pago) => pago.id === pagoDetalleId.value) ?? null)
     : null,
 )
 const cobroDetalle = computed(() =>
   cobroDetalleId.value
-    ? contabilidad.estado.cobros.find((cobro) => cobro.id === cobroDetalleId.value) ?? null
+    ? (contabilidad.estado.cobros.find((cobro) => cobro.id === cobroDetalleId.value) ?? null)
     : null,
 )
 
@@ -641,7 +685,12 @@ function cerrarDetalleCobro(): void {
 
           <AppCard compacta>
             <div class="compras-filtros">
-              <AppInput v-model="filtrosPago.texto" label="Buscar" type="search" placeholder="Proveedor o comprobante" />
+              <AppInput
+                v-model="filtrosPago.texto"
+                label="Buscar"
+                type="search"
+                placeholder="Proveedor o comprobante"
+              />
               <AppInput v-model="filtrosPago.desde" label="Desde" type="date" />
               <AppInput v-model="filtrosPago.hasta" label="Hasta" type="date" />
               <AppSelect
@@ -652,7 +701,11 @@ function cerrarDetalleCobro(): void {
                 @update:model-value="(v) => (filtrosPago.medio = v as FiltrosPago['medio'])"
               />
               <div class="compras-filtros__acciones">
-                <AppButton variante="secundario" tamano="sm" @click="Object.assign(filtrosPago, filtrosPagoVacios())">
+                <AppButton
+                  variante="secundario"
+                  tamano="sm"
+                  @click="Object.assign(filtrosPago, filtrosPagoVacios())"
+                >
                   <FilterX :size="15" />
                   Limpiar
                 </AppButton>
@@ -678,7 +731,13 @@ function cerrarDetalleCobro(): void {
                 </AppBadge>
               </template>
               <template #celda-acciones="{ fila }">
-                <AppButton variante="fantasma" tamano="sm" solo-icono aria-label="Ver detalle" @click="abrirDetallePago(String(fila.id))">
+                <AppButton
+                  variante="fantasma"
+                  tamano="sm"
+                  solo-icono
+                  aria-label="Ver detalle"
+                  @click="abrirDetallePago(String(fila.id))"
+                >
                   <Eye :size="16" />
                 </AppButton>
               </template>
@@ -716,7 +775,12 @@ function cerrarDetalleCobro(): void {
 
           <AppCard compacta>
             <div class="compras-filtros">
-              <AppInput v-model="filtrosCobro.texto" label="Buscar" type="search" placeholder="Cliente o comprobante" />
+              <AppInput
+                v-model="filtrosCobro.texto"
+                label="Buscar"
+                type="search"
+                placeholder="Cliente o comprobante"
+              />
               <AppInput v-model="filtrosCobro.desde" label="Desde" type="date" />
               <AppInput v-model="filtrosCobro.hasta" label="Hasta" type="date" />
               <AppSelect
@@ -727,7 +791,11 @@ function cerrarDetalleCobro(): void {
                 @update:model-value="(v) => (filtrosCobro.medio = v as FiltrosCobro['medio'])"
               />
               <div class="compras-filtros__acciones">
-                <AppButton variante="secundario" tamano="sm" @click="Object.assign(filtrosCobro, filtrosCobroVacios())">
+                <AppButton
+                  variante="secundario"
+                  tamano="sm"
+                  @click="Object.assign(filtrosCobro, filtrosCobroVacios())"
+                >
                   <FilterX :size="15" />
                   Limpiar
                 </AppButton>
@@ -735,7 +803,10 @@ function cerrarDetalleCobro(): void {
             </div>
           </AppCard>
 
-          <AppCard titulo="Cobros registrados" :descripcion="`${cobrosFiltrados.length} operaciones`">
+          <AppCard
+            titulo="Cobros registrados"
+            :descripcion="`${cobrosFiltrados.length} operaciones`"
+          >
             <DataTable
               :columnas="columnasCobros"
               :filas="filasCobros"
@@ -753,7 +824,13 @@ function cerrarDetalleCobro(): void {
                 </AppBadge>
               </template>
               <template #celda-acciones="{ fila }">
-                <AppButton variante="fantasma" tamano="sm" solo-icono aria-label="Ver detalle" @click="abrirDetalleCobro(String(fila.id))">
+                <AppButton
+                  variante="fantasma"
+                  tamano="sm"
+                  solo-icono
+                  aria-label="Ver detalle"
+                  @click="abrirDetalleCobro(String(fila.id))"
+                >
                   <Eye :size="16" />
                 </AppButton>
               </template>
@@ -775,11 +852,18 @@ function cerrarDetalleCobro(): void {
       <template #panel-movimientos>
         <div class="page__section">
           <div class="compras-resumen">
-            <article v-for="saldo in saldosTesoreria" :key="saldo.cuentaId" class="compras-resumen__item">
+            <article
+              v-for="saldo in saldosTesoreria"
+              :key="saldo.cuentaId"
+              class="compras-resumen__item"
+            >
               <span class="compras-resumen__icono"><Wallet :size="17" /></span>
               <span>{{ saldo.cuentaId === CODIGOS.CAJA ? 'Caja' : 'Banco' }}</span>
               <strong class="texto-mono">{{ formatearMoneda(saldo.saldoFinal) }}</strong>
-              <small>Ingresos {{ formatearMoneda(saldo.ingresos) }} · Egresos {{ formatearMoneda(saldo.egresos) }}</small>
+              <small
+                >Ingresos {{ formatearMoneda(saldo.ingresos) }} · Egresos
+                {{ formatearMoneda(saldo.egresos) }}</small
+              >
             </article>
           </div>
 
@@ -801,14 +885,19 @@ function cerrarDetalleCobro(): void {
                     <td>{{ movimiento.descripcion }}</td>
                     <td>{{ movimiento.cuenta }}</td>
                     <td>{{ movimiento.tipo }}</td>
-                    <td class="ui-tabla__celda--derecha texto-mono">{{ movimiento.importeTexto }}</td>
+                    <td class="ui-tabla__celda--derecha texto-mono">
+                      {{ movimiento.importeTexto }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </AppCard>
 
-          <AppCard titulo="Transferencias internas" :descripcion="`${movimientosFiltrados.length} operaciones`">
+          <AppCard
+            titulo="Transferencias internas"
+            :descripcion="`${movimientosFiltrados.length} operaciones`"
+          >
             <DataTable
               :columnas="[
                 { clave: 'fecha', titulo: 'Fecha' },
@@ -818,15 +907,17 @@ function cerrarDetalleCobro(): void {
                 { clave: 'destino', titulo: 'Destino' },
                 { clave: 'importe', titulo: 'Importe', alineacion: 'derecha' },
               ]"
-              :filas="movimientosFiltrados.map((t) => ({
-                id: t.id,
-                fecha: formatearFecha(t.fecha),
-                numero: t.numero,
-                descripcion: t.descripcion,
-                origen: t.cuentaOrigenId === CODIGOS.CAJA ? 'Caja' : 'Banco',
-                destino: t.cuentaDestinoId === CODIGOS.CAJA ? 'Caja' : 'Banco',
-                importe: formatearMoneda(t.importe),
-              }))"
+              :filas="
+                movimientosFiltrados.map((t) => ({
+                  id: t.id,
+                  fecha: formatearFecha(t.fecha),
+                  numero: t.numero,
+                  descripcion: t.descripcion,
+                  origen: t.cuentaOrigenId === CODIGOS.CAJA ? 'Caja' : 'Banco',
+                  destino: t.cuentaDestinoId === CODIGOS.CAJA ? 'Caja' : 'Banco',
+                  importe: formatearMoneda(t.importe),
+                }))
+              "
               clave-fila="id"
               compacta
               vacio-titulo="Sin transferencias"
@@ -838,7 +929,12 @@ function cerrarDetalleCobro(): void {
     </AppTabs>
 
     <!-- Modal pago -->
-    <AppModal :model-value="mostrarFormularioPago" titulo="Registrar pago" tamano="lg" @update:model-value="(v) => (mostrarFormularioPago = v)">
+    <AppModal
+      :model-value="mostrarFormularioPago"
+      titulo="Registrar pago"
+      tamano="lg"
+      @update:model-value="(v) => (mostrarFormularioPago = v)"
+    >
       <form class="compras-formulario" @submit.prevent="registrarPagoForm">
         <AppSelect
           id="pago-compra"
@@ -849,8 +945,21 @@ function cerrarDetalleCobro(): void {
           :error="intentoPago ? erroresPagoForm.compraId : undefined"
           required
         />
-        <AppInput id="pago-fecha" v-model="formPago.fecha" label="Fecha" type="date" :error="intentoPago ? erroresPagoForm.fecha : undefined" required />
-        <CurrencyInput id="pago-importe" v-model="formPago.importe" label="Importe" :error="intentoPago ? erroresPagoForm.importe : undefined" required />
+        <AppInput
+          id="pago-fecha"
+          v-model="formPago.fecha"
+          label="Fecha"
+          type="date"
+          :error="intentoPago ? erroresPagoForm.fecha : undefined"
+          required
+        />
+        <CurrencyInput
+          id="pago-importe"
+          v-model="formPago.importe"
+          label="Importe"
+          :error="intentoPago ? erroresPagoForm.importe : undefined"
+          required
+        />
         <div class="texto-suave">Saldo pendiente: {{ formatearMoneda(saldoPendientePago) }}</div>
         <AppSelect
           id="pago-medio"
@@ -862,7 +971,9 @@ function cerrarDetalleCobro(): void {
         />
         <AppInput id="pago-obs" v-model="formPago.observaciones" label="Observaciones" />
         <div class="compras-formulario__acciones">
-          <AppButton variante="secundario" @click="mostrarFormularioPago = false">Cancelar</AppButton>
+          <AppButton variante="secundario" @click="mostrarFormularioPago = false"
+            >Cancelar</AppButton
+          >
           <AppButton type="submit" :cargando="guardandoPago">
             <FileText :size="16" />
             Registrar pago
@@ -872,7 +983,12 @@ function cerrarDetalleCobro(): void {
     </AppModal>
 
     <!-- Modal cobro -->
-    <AppModal :model-value="mostrarFormularioCobro" titulo="Registrar cobro" tamano="lg" @update:model-value="(v) => (mostrarFormularioCobro = v)">
+    <AppModal
+      :model-value="mostrarFormularioCobro"
+      titulo="Registrar cobro"
+      tamano="lg"
+      @update:model-value="(v) => (mostrarFormularioCobro = v)"
+    >
       <form class="compras-formulario" @submit.prevent="registrarCobroForm">
         <AppSelect
           id="cobro-venta"
@@ -883,8 +999,21 @@ function cerrarDetalleCobro(): void {
           :error="intentoCobro ? erroresCobroForm.ventaId : undefined"
           required
         />
-        <AppInput id="cobro-fecha" v-model="formCobro.fecha" label="Fecha" type="date" :error="intentoCobro ? erroresCobroForm.fecha : undefined" required />
-        <CurrencyInput id="cobro-importe" v-model="formCobro.importe" label="Importe" :error="intentoCobro ? erroresCobroForm.importe : undefined" required />
+        <AppInput
+          id="cobro-fecha"
+          v-model="formCobro.fecha"
+          label="Fecha"
+          type="date"
+          :error="intentoCobro ? erroresCobroForm.fecha : undefined"
+          required
+        />
+        <CurrencyInput
+          id="cobro-importe"
+          v-model="formCobro.importe"
+          label="Importe"
+          :error="intentoCobro ? erroresCobroForm.importe : undefined"
+          required
+        />
         <div class="texto-suave">Saldo pendiente: {{ formatearMoneda(saldoPendienteCobro) }}</div>
         <AppSelect
           id="cobro-medio"
@@ -896,7 +1025,9 @@ function cerrarDetalleCobro(): void {
         />
         <AppInput id="cobro-obs" v-model="formCobro.observaciones" label="Observaciones" />
         <div class="compras-formulario__acciones">
-          <AppButton variante="secundario" @click="mostrarFormularioCobro = false">Cancelar</AppButton>
+          <AppButton variante="secundario" @click="mostrarFormularioCobro = false"
+            >Cancelar</AppButton
+          >
           <AppButton type="submit" :cargando="guardandoCobro">
             <FileText :size="16" />
             Registrar cobro
@@ -906,9 +1037,21 @@ function cerrarDetalleCobro(): void {
     </AppModal>
 
     <!-- Modal transferencia -->
-    <AppModal :model-value="mostrarFormularioTransferencia" titulo="Registrar transferencia" tamano="lg" @update:model-value="(v) => (mostrarFormularioTransferencia = v)">
+    <AppModal
+      :model-value="mostrarFormularioTransferencia"
+      titulo="Registrar transferencia"
+      tamano="lg"
+      @update:model-value="(v) => (mostrarFormularioTransferencia = v)"
+    >
       <form class="compras-formulario" @submit.prevent="registrarTransferenciaForm">
-        <AppInput id="trans-fecha" v-model="formTransferencia.fecha" label="Fecha" type="date" :error="intentoTransferencia ? erroresTransferenciaForm.fecha : undefined" required />
+        <AppInput
+          id="trans-fecha"
+          v-model="formTransferencia.fecha"
+          label="Fecha"
+          type="date"
+          :error="intentoTransferencia ? erroresTransferenciaForm.fecha : undefined"
+          required
+        />
         <AppSelect
           id="trans-origen"
           v-model="formTransferencia.cuentaOrigenId"
@@ -925,10 +1068,24 @@ function cerrarDetalleCobro(): void {
           :error="intentoTransferencia ? erroresTransferenciaForm.cuentaDestinoId : undefined"
           required
         />
-        <CurrencyInput id="trans-importe" v-model="formTransferencia.importe" label="Importe" :error="intentoTransferencia ? erroresTransferenciaForm.importe : undefined" required />
-        <AppInput id="trans-desc" v-model="formTransferencia.descripcion" label="Descripción" :error="intentoTransferencia ? erroresTransferenciaForm.descripcion : undefined" required />
+        <CurrencyInput
+          id="trans-importe"
+          v-model="formTransferencia.importe"
+          label="Importe"
+          :error="intentoTransferencia ? erroresTransferenciaForm.importe : undefined"
+          required
+        />
+        <AppInput
+          id="trans-desc"
+          v-model="formTransferencia.descripcion"
+          label="Descripción"
+          :error="intentoTransferencia ? erroresTransferenciaForm.descripcion : undefined"
+          required
+        />
         <div class="compras-formulario__acciones">
-          <AppButton variante="secundario" @click="mostrarFormularioTransferencia = false">Cancelar</AppButton>
+          <AppButton variante="secundario" @click="mostrarFormularioTransferencia = false"
+            >Cancelar</AppButton
+          >
           <AppButton type="submit" :cargando="guardandoTransferencia">
             <ArrowRightLeft :size="16" />
             Registrar transferencia
@@ -938,14 +1095,22 @@ function cerrarDetalleCobro(): void {
     </AppModal>
 
     <!-- Modal detalle pago -->
-    <AppModal :model-value="Boolean(pagoDetalle)" titulo="Detalle de pago" @update:model-value="(v) => !v && cerrarDetallePago()">
+    <AppModal
+      :model-value="Boolean(pagoDetalle)"
+      titulo="Detalle de pago"
+      @update:model-value="(v) => !v && cerrarDetallePago()"
+    >
       <div v-if="pagoDetalle">
         <p>{{ pagoDetalle.numero }} · {{ formatearMoneda(pagoDetalle.importe) }}</p>
       </div>
     </AppModal>
 
     <!-- Modal detalle cobro -->
-    <AppModal :model-value="Boolean(cobroDetalle)" titulo="Detalle de cobro" @update:model-value="(v) => !v && cerrarDetalleCobro()">
+    <AppModal
+      :model-value="Boolean(cobroDetalle)"
+      titulo="Detalle de cobro"
+      @update:model-value="(v) => !v && cerrarDetalleCobro()"
+    >
       <div v-if="cobroDetalle">
         <p>{{ cobroDetalle.numero }} · {{ formatearMoneda(cobroDetalle.importe) }}</p>
       </div>

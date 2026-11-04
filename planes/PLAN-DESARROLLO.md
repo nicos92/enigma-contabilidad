@@ -7,9 +7,9 @@
 **Cliente ficticio de la demo:** Comercializadora del Sur S.R.L.
 **Período de los datos:** noviembre de 2026
 **Última actualización:** 04/11/2026
-**Estado general:** Fase 8 completada — tesorería
-**Fases completadas:** 9 / 15
-**Próxima fase:** F9 — Contaduría
+**Estado general:** Fase 9 completada — contaduría
+**Fases completadas:** 10 / 15
+**Próxima fase:** F10 — Libros contables
 
 ---
 
@@ -142,7 +142,7 @@ En las tareas:
 | F6 | Ventas | Listado, formulario, factura y cobranza | Completado | 100% |
 | F7 | Maestros | Proveedores, clientes y productos | Completado | 100% |
 | F8 | Tesorería | Pagos, cobros, movimientos y transferencias | Completado | 100% |
-| F9 | Contaduría | Bandeja, asientos y plan de cuentas | Pendiente | 0% |
+| F9 | Contaduría | Bandeja, asientos y plan de cuentas | Completado | 100% |
 | F10 | Libros contables | Libro Diario y Libro Mayor | Pendiente | 0% |
 | F11 | Balances y estados | Comprobación, ESP, ER, flujo y evolución | Pendiente | 0% |
 | F12 | Trazabilidad | Stepper integrado y recorrido guiado | Pendiente | 0% |
@@ -522,22 +522,22 @@ En las tareas:
 
 ### F9 — Contaduría
 
-**Estado:** Pendiente
+**Estado:** Completado
 **Depende de:** F2, F3, F5, F6, F8
 **Objetivo:** revisar la documentación y aprobar la registración contable.
 
 **Tareas**
 
-- [ ] Crear bandeja con fecha, documento, tipo, origen, cliente/proveedor, importe, estado y acción.
-- [ ] Implementar los estados: pendiente, en revisión, aprobado, registrado y observado.
-- [ ] Implementar filtros por origen, estado y fecha.
-- [ ] Crear detalle con documento simulado, información comercial, impuestos, cuenta sugerida y asiento propuesto.
-- [ ] Implementar aprobación y registración idempotente.
-- [ ] Implementar observación con motivo y reapertura.
-- [ ] Crear pantalla de asientos contables con filtros y detalle.
-- [ ] Crear árbol de plan de cuentas con código, nombre, tipo y naturaleza.
-- [ ] Vincular cada asiento con su documento de origen.
-- [ ] Actualizar libros y balances al registrar.
+- [x] Crear bandeja con fecha, documento, tipo, origen, cliente/proveedor, importe, estado y acción.
+- [x] Implementar los estados: pendiente, en revisión, aprobado, registrado y observado.
+- [x] Implementar filtros por origen, estado y fecha.
+- [x] Crear detalle con documento simulado, información comercial, impuestos, cuenta sugerida y asiento propuesto.
+- [x] Implementar aprobación y registración idempotente.
+- [x] Implementar observación con motivo y reapertura.
+- [x] Crear pantalla de asientos contables con filtros y detalle.
+- [x] Crear árbol de plan de cuentas con código, nombre, tipo y naturaleza.
+- [x] Vincular cada asiento con su documento de origen.
+- [x] Actualizar libros y balances al registrar.
 
 **Entregable:** circuito contable completo.
 
@@ -771,6 +771,7 @@ Recorrido que debe poder hacerse frente al cliente:
 | 04/11/2026 | F6 | Módulo de ventas implementado: listado, formulario, factura emitida, cuenta por cobrar y asiento balanceado. | Completado |
 | 04/11/2026 | F7 | Módulo de maestros implementado: proveedores, clientes y productos con alta, edición, ficha, saldo, historial y eliminación protegida. | Completado |
 | 04/11/2026 | F8 | Módulo de tesorería implementado: pagos, cobros, movimientos de fondos y transferencias con validaciones e idempotencia. | Completado |
+| 04/11/2026 | F9 | Módulo de contaduría implementado: bandeja de documentos, asientos contables y plan de cuentas. | Completado |
 
 ---
 

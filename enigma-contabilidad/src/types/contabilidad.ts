@@ -277,6 +277,7 @@ export interface DocumentoContable {
   estado: EstadoDocumento
   asientoId: string
   operacionId: string | null
+  motivoObservacion?: string | null
 }
 
 /* -------------------------------------------------------------------------- */

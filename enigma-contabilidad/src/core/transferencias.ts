@@ -57,7 +57,8 @@ export function estadoContableTransferencia(
   documentos: readonly DocumentoContable[],
 ): EstadoDocumento {
   return (
-    documentos.find((documento) => documento.id === transferencia.documentoId)?.estado ?? 'pendiente'
+    documentos.find((documento) => documento.id === transferencia.documentoId)?.estado ??
+    'pendiente'
   )
 }
 
@@ -71,9 +72,9 @@ export function filtrarTransferencias(
     .filter((transferencia) => {
       const textoCoincide =
         !consulta ||
-        [transferencia.numero, transferencia.descripcion].map(normalizarTexto).some((valor) =>
-          valor.includes(consulta),
-        )
+        [transferencia.numero, transferencia.descripcion]
+          .map(normalizarTexto)
+          .some((valor) => valor.includes(consulta))
       if (!textoCoincide) return false
       if (filtros.desde && transferencia.fecha < filtros.desde) return false
       if (filtros.hasta && transferencia.fecha > filtros.hasta) return false

@@ -181,10 +181,7 @@ function esFechaValida(fecha: string): boolean {
   )
 }
 
-export function validarPago(
-  entrada: EntradaValidacionPago,
-  _pagos?: readonly Pago[],
-): ErroresPago {
+export function validarPago(entrada: EntradaValidacionPago, _pagos?: readonly Pago[]): ErroresPago {
   void _pagos
   const errores: ErroresPago = {}
 

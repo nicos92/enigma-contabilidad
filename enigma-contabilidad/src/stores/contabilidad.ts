@@ -30,16 +30,8 @@ import {
   siguienteNumeroComprobanteVenta,
   type DatosNuevaVenta,
 } from '@/core/ventas'
-import {
-  generarPago,
-  siguienteIdPago,
-  siguienteNumeroPago,
-} from '@/core/pagos'
-import {
-  generarCobro,
-  siguienteIdCobro,
-  siguienteNumeroCobro,
-} from '@/core/cobros'
+import { generarPago, siguienteIdPago, siguienteNumeroPago } from '@/core/pagos'
+import { generarCobro, siguienteIdCobro, siguienteNumeroCobro } from '@/core/cobros'
 import {
   generarTransferencia,
   siguienteIdTransferencia,
@@ -343,6 +335,87 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
   }
 
   /**
+   * Marca un documento como observado, con un motivo. No genera asiento ni
+   * impacta en los libros. Es reversible mediante `reabrirDocumento`.
+   */
+  function observarDocumento(
+    documentoId: string,
+    motivo?: string,
+  ): { ok: boolean; motivo?: string } {
+    const documento = estado.value.documentos.find((doc) => doc.id === documentoId)
+    if (!documento) {
+      return { ok: false, motivo: 'documento_no_encontrado' }
+    }
+    if (documento.estado === 'registrado') {
+      return { ok: false, motivo: 'documento_registrado' }
+    }
+    documento.estado = 'observado'
+    documento.motivoObservacion = motivo?.trim() || null
+    persistir()
+    return { ok: true }
+  }
+
+  /**
+   * Reabre un documento observado para una nueva revisión.
+   */
+  function reabrirDocumento(documentoId: string): { ok: boolean; motivo?: string } {
+    const documento = estado.value.documentos.find((doc) => doc.id === documentoId)
+    if (!documento) {
+      return { ok: false, motivo: 'documento_no_encontrado' }
+    }
+    if (documento.estado !== 'observado') {
+      return { ok: false, motivo: 'documento_no_observado' }
+    }
+    documento.estado = 'pendiente'
+    documento.motivoObservacion = null
+    persistir()
+    return { ok: true }
+  }
+
+  /**
+   * Marca un documento como "en revisión". Transición intermedia opcional.
+   */
+  function ponerEnRevision(documentoId: string): { ok: boolean; motivo?: string } {
+    const documento = estado.value.documentos.find((doc) => doc.id === documentoId)
+    if (!documento) {
+      return { ok: false, motivo: 'documento_no_encontrado' }
+    }
+    if (documento.estado === 'registrado' || documento.estado === 'observado') {
+      return { ok: false, motivo: 'estado_no_permitido' }
+    }
+    documento.estado = 'en_revision'
+    persistir()
+    return { ok: true }
+  }
+
+  /**
+   * Aprueba un documento (estado aprobado) sin registrarlo todavía.
+   * Alias liviano para compatibilidad con flujos que separan aprobación y
+   * registración. La registración final se hace con `aprobarDocumento`.
+   */
+  function aprobarSinRegistrar(documentoId: string): { ok: boolean; motivo?: string } {
+    const documento = estado.value.documentos.find((doc) => doc.id === documentoId)
+    if (!documento) {
+      return { ok: false, motivo: 'documento_no_encontrado' }
+    }
+    if (documento.estado === 'registrado') {
+      return { ok: true }
+    }
+    if (documento.estado === 'observado') {
+      return { ok: false, motivo: 'documento_observado' }
+    }
+    documento.estado = 'aprobado'
+    persistir()
+    return { ok: true }
+  }
+
+  /**
+   * Alias de `aprobarDocumento` para compatibilidad con nombres alternativos.
+   */
+  const registrarDocumento = aprobarDocumento
+  const aprobarYRegistrar = aprobarDocumento
+
+  /**
    * Registra una compra completa, su factura recibida y el asiento propuesto.
    * El documento queda pendiente en la bandeja de Contaduría hasta que se
    * apruebe desde ese módulo.
@@ -441,9 +514,7 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
       return { ok: false, motivo: 'importe_supera_saldo' }
     }
 
-    const numero =
-      datos.numero?.trim() ||
-      siguienteNumeroPago(estado.value.pagos)
+    const numero = datos.numero?.trim() || siguienteNumeroPago(estado.value.pagos)
 
     if (estado.value.pagos.some((pago) => pago.numero === numero)) {
       return { ok: false, motivo: 'numero_duplicado' }
@@ -497,9 +568,7 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
       return { ok: false, motivo: 'importe_supera_saldo' }
     }
 
-    const numero =
-      datos.numero?.trim() ||
-      siguienteNumeroCobro(estado.value.cobros)
+    const numero = datos.numero?.trim() || siguienteNumeroCobro(estado.value.cobros)
 
     if (estado.value.cobros.some((cobro) => cobro.numero === numero)) {
       return { ok: false, motivo: 'numero_duplicado' }
@@ -554,9 +623,7 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
       return { ok: false, motivo: 'importe_invalido' }
     }
 
-    const numero =
-      datos.numero?.trim() ||
-      siguienteNumeroTransferencia(estado.value.transferencias)
+    const numero = datos.numero?.trim() || siguienteNumeroTransferencia(estado.value.transferencias)
 
     if (estado.value.transferencias.some((transferencia) => transferencia.numero === numero)) {
       return { ok: false, motivo: 'numero_duplicado' }
@@ -943,6 +1010,15 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
     saldosClientes,
     saldoCuenta,
     aprobarDocumento,
+    aprobar: aprobarDocumento,
+    registrarDocumento,
+    aprobarYRegistrar,
+    observarDocumento,
+    observar: observarDocumento,
+    reabrirDocumento,
+    reabrir: reabrirDocumento,
+    ponerEnRevision,
+    aprobarSinRegistrar,
     registrarCompra,
     registrarVenta,
     registrarPago,
