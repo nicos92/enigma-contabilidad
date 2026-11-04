@@ -1076,6 +1076,274 @@ table {
   }
 }
 
+/* Ventas ------------------------------------------------------------------ */
+.ventas-resumen {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--espacio-4);
+}
+
+.ventas-resumen__item {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  padding: var(--espacio-4);
+  border: var(--borde-fino);
+  border-radius: var(--radio-lg);
+  background: var(--color-superficie);
+  box-shadow: var(--sombra-xs);
+}
+
+.ventas-resumen__item span {
+  color: var(--color-texto-suave);
+  font-size: var(--texto-sm);
+}
+
+.ventas-resumen__item strong {
+  font-size: var(--texto-xl);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--peso-fuerte);
+}
+
+.ventas-resumen__item small {
+  color: var(--color-texto-tenue);
+  font-size: var(--texto-xs);
+}
+
+.ventas-resumen__icono {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: var(--radio-md);
+  background: var(--color-primario-suave);
+  color: var(--color-primario);
+}
+
+.ventas-filtros {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.4fr) repeat(4, minmax(140px, 1fr)) auto;
+  gap: var(--espacio-3);
+  align-items: end;
+}
+
+.ventas-filtros__acciones {
+  display: flex;
+  align-items: end;
+}
+
+.ventas-tabla .ui-tabla-contenedor {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.ventas-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  color: var(--color-primario);
+}
+
+.ventas-proveedor {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ventas-proveedor small {
+  color: var(--color-texto-tenue);
+  font-size: var(--texto-xs);
+}
+
+.ventas-error {
+  margin-bottom: var(--espacio-3);
+  color: var(--color-error);
+  font-size: var(--texto-sm);
+}
+
+.ventas-formulario {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) 320px;
+  gap: var(--espacio-5);
+  align-items: start;
+}
+
+.ventas-formulario__principal,
+.ventas-formulario__lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.ventas-formulario__campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-4);
+}
+
+.ventas-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.ventas-item {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.4fr) minmax(160px, 1.2fr) 90px 150px 110px 110px 40px;
+  gap: var(--espacio-3);
+  align-items: end;
+  padding-bottom: var(--espacio-4);
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.ventas-item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.ventas-item__subtotal {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--texto-sm);
+}
+
+.ventas-totales {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+
+.ventas-totales__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  padding: var(--espacio-2) 0;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.ventas-totales__fila--total {
+  border-bottom: 0;
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-fuerte);
+}
+
+.ventas-aviso {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  margin-top: var(--espacio-4);
+  padding: var(--espacio-3);
+  border: 1px dashed var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-superficie-suave);
+  color: var(--color-texto-suave);
+  font-size: var(--texto-sm);
+}
+
+.ventas-datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-3);
+}
+
+.ventas-datos dt {
+  color: var(--color-texto-tenue);
+  font-size: var(--texto-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ventas-datos dd {
+  margin-top: 2px;
+  font-size: var(--texto-md);
+}
+
+.ventas-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.ventas-detalle__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+.ventas-detalle__items {
+  overflow-x: auto;
+}
+
+.ventas-detalle__totales {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ventas-pagos ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}
+
+.ventas-pagos li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-sm);
+  background: var(--color-superficie-suave);
+}
+
+.ventas-formulario__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espacio-2);
+}
+
+@media (max-width: 1080px) {
+  .ventas-formulario {
+    grid-template-columns: 1fr;
+  }
+
+  .ventas-item {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ventas-filtros {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ventas-resumen {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .ventas-resumen {
+    grid-template-columns: 1fr;
+  }
+
+  .ventas-filtros {
+    grid-template-columns: 1fr;
+  }
+
+  .ventas-item {
+    grid-template-columns: 1fr;
+  }
+
+  .ventas-formulario__campos {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Impresión de factura recibida ------------------------------------------- */
 @media print {
   body.imprimiendo-factura {

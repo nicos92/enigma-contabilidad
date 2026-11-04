@@ -20,6 +20,12 @@ import {
   siguienteNumeroComprobanteCompra,
   type DatosNuevaCompra,
 } from '@/core/compras'
+import {
+  generarVenta,
+  siguienteIdVenta,
+  siguienteNumeroComprobanteVenta,
+  type DatosNuevaVenta,
+} from '@/core/ventas'
 import { cargarEstado, guardarEstado, restaurarEstadoDemo } from '@/core/persistencia'
 import { crearEstadoDemo } from '@/data/demo'
 import type {
@@ -29,7 +35,10 @@ import type {
   DocumentoContable,
   EstadoContable,
   ItemCompra,
+  ItemVenta,
   Proveedor,
+  Cliente,
+  Venta,
   ResultadoAprobacion,
 } from '@/types/contabilidad'
 import type { FechaISO } from '@/types'
@@ -48,6 +57,24 @@ export interface ResultadoRegistroCompra {
   ok: boolean
   motivo?: 'numero_duplicado' | 'datos_invalidos'
   compra?: Compra
+  documento?: DocumentoContable
+  asiento?: Asiento
+}
+
+export interface EntradaRegistroVenta {
+  cliente: Cliente
+  fecha: FechaISO
+  vencimiento: FechaISO
+  tipoComprobante: string
+  numero?: string
+  condicionVenta: Venta['condicionVenta']
+  items: ItemVenta[]
+}
+
+export interface ResultadoRegistroVenta {
+  ok: boolean
+  motivo?: 'numero_duplicado' | 'datos_invalidos'
+  venta?: Venta
   documento?: DocumentoContable
   asiento?: Asiento
 }
@@ -280,6 +307,49 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
     }
   }
 
+  /**
+   * Registra una venta completa, su factura emitida y el asiento propuesto.
+   * El documento queda pendiente en la bandeja de Contaduría hasta que se
+   * apruebe desde ese módulo.
+   */
+  function registrarVenta(datos: EntradaRegistroVenta): ResultadoRegistroVenta {
+    const numero =
+      datos.numero?.trim() ||
+      siguienteNumeroComprobanteVenta(estado.value.ventas, datos.tipoComprobante)
+
+    if (estado.value.ventas.some((venta) => venta.numero === numero)) {
+      return { ok: false, motivo: 'numero_duplicado' }
+    }
+
+    const id = siguienteIdVenta(estado.value.ventas)
+    const datosCompletos: DatosNuevaVenta = {
+      cliente: datos.cliente,
+      fecha: datos.fecha,
+      vencimiento: datos.vencimiento,
+      tipoComprobante: datos.tipoComprobante,
+      numero,
+      condicionVenta: datos.condicionVenta,
+      items: datos.items,
+    }
+
+    try {
+      const generada = generarVenta(datosCompletos, id)
+      estado.value.ventas.push(generada.venta)
+      estado.value.asientos.push(generada.asiento)
+      estado.value.documentos.push(generada.documento)
+      persistir()
+
+      return {
+        ok: true,
+        venta: generada.venta,
+        documento: generada.documento,
+        asiento: generada.asiento,
+      }
+    } catch {
+      return { ok: false, motivo: 'datos_invalidos' }
+    }
+  }
+
   /** Actualiza los datos institucionales de la empresa y los persiste. */
   function actualizarEmpresa(cambios: Partial<DatosEmpresa>): void {
     estado.value.empresa = { ...estado.value.empresa, ...cambios }
@@ -316,6 +386,7 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
     saldoCuenta,
     aprobarDocumento,
     registrarCompra,
+    registrarVenta,
     actualizarEmpresa,
     restaurarDemo,
     reiniciarEnMemoria,

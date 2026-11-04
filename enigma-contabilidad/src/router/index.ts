@@ -79,8 +79,17 @@ const routes: RouteRecordRaw[] = [
       descripcion: 'Circuito de compras, facturas recibidas y estado de pago.',
     },
   },
+  {
+    path: '/ventas',
+    name: 'ventas',
+    component: () => import('@/views/VentasView.vue'),
+    meta: {
+      titulo: 'Ventas',
+      descripcion: 'Facturación, cuenta por cobrar y cobranza.',
+    },
+  },
   ...modulos
-    .filter((modulo) => modulo.path !== 'compras')
+    .filter((modulo) => modulo.path !== 'compras' && modulo.path !== 'ventas')
     .map<RouteRecordRaw>((modulo) => ({
       path: `/${modulo.path}`,
       name: modulo.name,
