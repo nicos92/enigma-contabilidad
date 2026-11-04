@@ -107,6 +107,15 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/libros',
+    name: 'libros',
+    component: () => import('@/views/LibrosView.vue'),
+    meta: {
+      titulo: 'Libros contables',
+      descripcion: 'Libro Diario y Libro Mayor derivados de las registraciones.',
+    },
+  },
+  {
     path: '/maestros',
     name: 'maestros',
     component: () => import('@/views/MaestrosView.vue'),
@@ -122,7 +131,8 @@ const routes: RouteRecordRaw[] = [
         modulo.path !== 'ventas' &&
         modulo.path !== 'maestros' &&
         modulo.path !== 'tesoreria' &&
-        modulo.path !== 'contaduria',
+        modulo.path !== 'contaduria' &&
+        modulo.path !== 'libros',
     )
     .map<RouteRecordRaw>((modulo) => ({
       path: `/${modulo.path}`,

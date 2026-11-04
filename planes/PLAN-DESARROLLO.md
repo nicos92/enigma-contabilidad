@@ -7,9 +7,9 @@
 **Cliente ficticio de la demo:** Comercializadora del Sur S.R.L.
 **Período de los datos:** noviembre de 2026
 **Última actualización:** 04/11/2026
-**Estado general:** Fase 9 completada — contaduría
-**Fases completadas:** 10 / 15
-**Próxima fase:** F10 — Libros contables
+**Estado general:** Fase 10 completada — libros contables
+**Fases completadas:** 11 / 15
+**Próxima fase:** F11 — Balances y estados
 
 ---
 
@@ -143,7 +143,7 @@ En las tareas:
 | F7 | Maestros | Proveedores, clientes y productos | Completado | 100% |
 | F8 | Tesorería | Pagos, cobros, movimientos y transferencias | Completado | 100% |
 | F9 | Contaduría | Bandeja, asientos y plan de cuentas | Completado | 100% |
-| F10 | Libros contables | Libro Diario y Libro Mayor | Pendiente | 0% |
+| F10 | Libros contables | Libro Diario y Libro Mayor | Completado | 100% |
 | F11 | Balances y estados | Comprobación, ESP, ER, flujo y evolución | Pendiente | 0% |
 | F12 | Trazabilidad | Stepper integrado y recorrido guiado | Pendiente | 0% |
 | F13 | Informes y configuración | Reportes, CSV, logo y reset | Pendiente | 0% |
@@ -552,22 +552,22 @@ En las tareas:
 
 ### F10 — Libros contables
 
-**Estado:** Pendiente
+**Estado:** Completado
 **Depende de:** F9
 **Objetivo:** consultar el Libro Diario y el Libro Mayor derivados de los asientos registrados.
 
 **Tareas**
 
-- [ ] Crear Libro Diario con fecha, número, cuenta, descripción, Debe y Haber.
-- [ ] Implementar filtros por fecha, número de asiento y cuenta.
-- [ ] Mostrar totales y verificación Debe = Haber.
-- [ ] Permitir abrir el detalle del asiento.
-- [ ] Vincular cada asiento con su comprobante.
-- [ ] Crear Libro Mayor con selector de cuenta.
-- [ ] Mostrar saldo inicial, movimientos, total Debe, total Haber y saldo final.
-- [ ] Implementar filtros por período.
-- [ ] Permitir abrir el asiento original desde cada movimiento.
-- [ ] Verificar que el Mayor se derive del Diario.
+- [x] Crear Libro Diario con fecha, número, cuenta, descripción, Debe y Haber.
+- [x] Implementar filtros por fecha, número de asiento y cuenta.
+- [x] Mostrar totales y verificación Debe = Haber.
+- [x] Permitir abrir el detalle del asiento.
+- [x] Vincular cada asiento con su comprobante.
+- [x] Crear Libro Mayor con selector de cuenta.
+- [x] Mostrar saldo inicial, movimientos, total Debe, total Haber y saldo final.
+- [x] Implementar filtros por período.
+- [x] Permitir abrir el asiento original desde cada movimiento.
+- [x] Verificar que el Mayor se derive del Diario.
 
 **Entregable:** libros contables profesionales.
 
@@ -772,6 +772,7 @@ Recorrido que debe poder hacerse frente al cliente:
 | 04/11/2026 | F7 | Módulo de maestros implementado: proveedores, clientes y productos con alta, edición, ficha, saldo, historial y eliminación protegida. | Completado |
 | 04/11/2026 | F8 | Módulo de tesorería implementado: pagos, cobros, movimientos de fondos y transferencias con validaciones e idempotencia. | Completado |
 | 04/11/2026 | F9 | Módulo de contaduría implementado: bandeja de documentos, asientos contables y plan de cuentas. | Completado |
+| 04/11/2026 | F10 | Módulo de libros contables implementado: Libro Diario y Libro Mayor derivados de los asientos registrados. | Completado |
 
 ---
 
