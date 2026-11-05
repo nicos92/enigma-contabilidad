@@ -1,4 +1,4 @@
-import type { Cliente, DatosEmpresa, Producto, Proveedor } from '@/types/contabilidad'
+import type { Cliente, DatosEmpresa, Producto, Proveedor, UsuarioDemo } from '@/types/contabilidad'
 import type { Periodo } from '@/types'
 import { CODIGOS } from '@/data/plan-cuentas'
 
@@ -17,6 +17,14 @@ export const EMPRESA_DEMO: DatosEmpresa = {
   telefono: '(0291) 455-0100',
   email: 'administracion@comercializadoradelsur.com.ar',
   logoDataUrl: null,
+}
+
+/** Usuario ficticio que se muestra en la barra superior y en Configuración. */
+export const USUARIO_DEMO: UsuarioDemo = {
+  nombre: 'Lucía Fernández',
+  rol: 'Administración',
+  email: 'lucia.fernandez@comercializadoradelsur.com.ar',
+  area: 'Administración y Finanzas',
 }
 
 export const PROVEEDORES: readonly Proveedor[] = [

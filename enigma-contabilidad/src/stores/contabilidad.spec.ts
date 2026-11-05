@@ -1,8 +1,10 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { CLAVE_ALMACENAMIENTO, cargarEstado, guardarEstado } from '@/core/persistencia'
+import { EMPRESA_DEMO, USUARIO_DEMO } from '@/data/catalogos'
 import { crearEstadoDemo } from '@/data/demo'
 import { useContabilidadStore } from '@/stores/contabilidad'
+import type { EstadoContable } from '@/types/contabilidad'
 
 function iniciarPinia(): void {
   localStorage.clear()
@@ -229,5 +231,67 @@ describe('useContabilidadStore', () => {
     const store = useContabilidadStore()
     store.estado.empresa.razonSocial = 'Empresa de prueba'
     expect(store.persistir()).toBe(true)
+  })
+
+  it('actualiza y persiste los datos de la empresa y del usuario', () => {
+    const store = useContabilidadStore()
+    const logo = 'data:image/png;base64,AAAA'
+
+    store.actualizarEmpresa({
+      razonSocial: 'Empresa Editada S.A.',
+      nombreComercial: 'Empresa Editada',
+      logoDataUrl: logo,
+    })
+    store.actualizarUsuario({
+      nombre: 'Usuario de Prueba',
+      rol: 'Contador',
+      email: 'usuario@empresa.test',
+      area: 'Contabilidad',
+    })
+
+    const persistido = cargarEstado()
+    expect(persistido?.empresa.razonSocial).toBe('Empresa Editada S.A.')
+    expect(persistido?.empresa.nombreComercial).toBe('Empresa Editada')
+    expect(persistido?.empresa.logoDataUrl).toBe(logo)
+    expect(persistido?.usuario).toEqual({
+      nombre: 'Usuario de Prueba',
+      rol: 'Contador',
+      email: 'usuario@empresa.test',
+      area: 'Contabilidad',
+    })
+
+    setActivePinia(createPinia())
+    const nuevoStore = useContabilidadStore()
+    expect(nuevoStore.estado.empresa.razonSocial).toBe('Empresa Editada S.A.')
+    expect(nuevoStore.estado.empresa.logoDataUrl).toBe(logo)
+    expect(nuevoStore.estado.usuario.nombre).toBe('Usuario de Prueba')
+  })
+
+  it('restaura la empresa, el usuario y el logo originales de la demo', () => {
+    const store = useContabilidadStore()
+    store.actualizarEmpresa({
+      razonSocial: 'Empresa Editada S.A.',
+      logoDataUrl: 'data:image/png;base64,AAAA',
+    })
+    store.actualizarUsuario({ nombre: 'Usuario de Prueba', rol: 'Contador' })
+
+    store.restaurarDemo()
+
+    expect(store.estado.empresa).toEqual(EMPRESA_DEMO)
+    expect(store.estado.usuario).toEqual(USUARIO_DEMO)
+    expect(store.estado.empresa.logoDataUrl).toBeNull()
+    expect(cargarEstado()?.empresa).toEqual(EMPRESA_DEMO)
+    expect(cargarEstado()?.usuario).toEqual(USUARIO_DEMO)
+  })
+
+  it('completa el usuario cuando un estado guardado no lo incluye', () => {
+    const estadoSinUsuario = crearEstadoDemo() as Partial<EstadoContable>
+    delete estadoSinUsuario.usuario
+    expect(guardarEstado(estadoSinUsuario as EstadoContable)).toBe(true)
+
+    expect(cargarEstado()?.usuario).toEqual(USUARIO_DEMO)
+
+    const store = useContabilidadStore()
+    expect(store.estado.usuario).toEqual(USUARIO_DEMO)
   })
 })

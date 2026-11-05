@@ -295,9 +295,18 @@ export interface DatosEmpresa {
   logoDataUrl: string | null
 }
 
+/** Usuario ficticio que identifica la sesión de demostración. */
+export interface UsuarioDemo {
+  nombre: string
+  rol: string
+  email: string
+  area: string
+}
+
 export interface EstadoContable {
   version: number
   empresa: DatosEmpresa
+  usuario: UsuarioDemo
   periodo: Periodo
   cuentas: Cuenta[]
   proveedores: Proveedor[]

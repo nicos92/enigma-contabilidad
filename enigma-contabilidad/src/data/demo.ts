@@ -6,6 +6,7 @@ import {
   PERIODO_DEMO,
   PRODUCTOS,
   PROVEEDORES,
+  USUARIO_DEMO,
 } from '@/data/catalogos'
 import { CODIGOS, CUENTAS } from '@/data/plan-cuentas'
 import {
@@ -1031,6 +1032,7 @@ export function crearEstadoDemo(): EstadoContable {
   return {
     version: VERSION_ESQUEMA,
     empresa: { ...EMPRESA_DEMO },
+    usuario: { ...USUARIO_DEMO },
     periodo: { ...PERIODO_DEMO },
     cuentas,
     proveedores,

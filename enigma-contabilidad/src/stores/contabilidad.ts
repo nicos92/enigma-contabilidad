@@ -59,6 +59,7 @@ import type {
   Transferencia,
   MedioPago,
   ResultadoAprobacion,
+  UsuarioDemo,
 } from '@/types/contabilidad'
 import type { FechaISO } from '@/types'
 
@@ -693,6 +694,12 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
     persistir()
   }
 
+  /** Actualiza el usuario ficticio de la sesión y lo persiste. */
+  function actualizarUsuario(cambios: Partial<UsuarioDemo>): void {
+    estado.value.usuario = { ...estado.value.usuario, ...cambios }
+    persistir()
+  }
+
   /* Maestros --------------------------------------------------------------- */
 
   interface ResultadoCrudMaestro {
@@ -1066,6 +1073,7 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
     agregarTransferencia: registrarTransferencia,
     guardarTransferencia: registrarTransferencia,
     actualizarEmpresa,
+    actualizarUsuario,
     restaurarDemo,
     reiniciarEnMemoria,
     persistir,
