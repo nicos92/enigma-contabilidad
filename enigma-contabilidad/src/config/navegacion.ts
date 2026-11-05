@@ -235,6 +235,28 @@ export const GRUPOS_NAVEGACION: readonly GrupoNavegacion[] = [
         descripcion: 'Reportes del período y exportación de datos.',
         icono: ChartColumn,
         to: { path: '/informes' },
+        hijos: [
+          {
+            etiqueta: 'Ventas por cliente',
+            descripcion: 'Facturación, cobros y saldo por cliente.',
+            to: { path: '/informes', query: { vista: 'ventas-clientes' } },
+          },
+          {
+            etiqueta: 'Compras por proveedor',
+            descripcion: 'Facturación, pagos y saldo por proveedor.',
+            to: { path: '/informes', query: { vista: 'compras-proveedores' } },
+          },
+          {
+            etiqueta: 'IVA del período',
+            descripcion: 'Débito, crédito y posición fiscal.',
+            to: { path: '/informes', query: { vista: 'iva' } },
+          },
+          {
+            etiqueta: 'Top de productos',
+            descripcion: 'Ranking por ventas netas registradas.',
+            to: { path: '/informes', query: { vista: 'top-productos' } },
+          },
+        ],
       },
     ],
   },
