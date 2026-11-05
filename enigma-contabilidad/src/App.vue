@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { RouterView } from 'vue-router'
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppTopbar from '@/components/layout/AppTopbar.vue'
+import RecorridoGuiado from '@/components/recorrido/RecorridoGuiado.vue'
 import ToastStack from '@/components/ui/ToastStack.vue'
 import { useUiStore } from '@/stores/ui'
 
@@ -12,6 +13,7 @@ const main = ref<HTMLElement | null>(null)
 const clasesShell = computed(() => ({
   'app-shell--colapsada': ui.sidebarColapsada,
   'app-shell--menu-abierto': ui.sidebarMovilAbierta,
+  'app-shell--presentacion': ui.modoPresentacion,
 }))
 
 function enfocarContenido(): void {
@@ -40,5 +42,6 @@ function enfocarContenido(): void {
     </div>
 
     <ToastStack />
+    <RecorridoGuiado />
   </div>
 </template>

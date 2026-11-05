@@ -71,6 +71,15 @@ const routes: RouteRecordRaw[] = [
     meta: { titulo: 'Panel general' },
   },
   {
+    path: '/trazabilidad',
+    name: 'trazabilidad',
+    component: () => import('@/views/TrazabilidadView.vue'),
+    meta: {
+      titulo: 'Trazabilidad',
+      descripcion: 'Recorrido guiado de una operación desde su origen hasta el balance.',
+    },
+  },
+  {
     path: '/compras',
     name: 'compras',
     component: () => import('@/views/ComprasView.vue'),

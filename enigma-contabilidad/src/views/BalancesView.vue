@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CheckCircle2, Eye, Library, Printer, Scale, XCircle } from '@lucide/vue'
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import AppButton from '@/components/ui/AppButton.vue'
@@ -109,6 +109,14 @@ const filasComprobacion = computed<Record<string, unknown>[]>(() =>
 
 const cuentaDetalle = ref<string | null>(null)
 
+watch(
+  () => route.query.cuenta,
+  (valor) => {
+    cuentaDetalle.value = typeof valor === 'string' && valor ? valor : null
+  },
+  { immediate: true },
+)
+
 const mayorDetalle = computed<MayorCuenta | undefined>(() =>
   cuentaDetalle.value ? contabilidad.libroMayor[cuentaDetalle.value] : undefined,
 )
@@ -127,10 +135,19 @@ const filasDetalle = computed<Record<string, unknown>[]>(() =>
 
 function abrirDetalleCuenta(codigo: string): void {
   cuentaDetalle.value = codigo
+  if (route.query.cuenta === codigo) return
+  void router.replace({
+    name: 'balances',
+    query: { ...route.query, vista: 'comprobacion', cuenta: codigo },
+  })
 }
 
 function cerrarDetalleCuenta(): void {
   cuentaDetalle.value = null
+  if (!route.query.cuenta) return
+  const query = { ...route.query }
+  delete query.cuenta
+  void router.replace({ name: 'balances', query })
 }
 
 function irALibroMayor(): void {

@@ -624,17 +624,62 @@ const cobroDetalle = computed(() =>
     : null,
 )
 
+watch(
+  () => route.query.pago,
+  (valor) => {
+    if (typeof valor === 'string') {
+      pagoDetalleId.value = valor
+    } else {
+      pagoDetalleId.value = null
+    }
+  },
+  { immediate: true },
+)
+
+watch(
+  () => route.query.cobro,
+  (valor) => {
+    if (typeof valor === 'string') {
+      cobroDetalleId.value = valor
+    } else {
+      cobroDetalleId.value = null
+    }
+  },
+  { immediate: true },
+)
+
 function abrirDetallePago(id: string): void {
   pagoDetalleId.value = id
+  void router.replace({
+    name: 'tesoreria',
+    query: { ...route.query, vista: 'pagos', pago: id },
+  })
 }
+
 function cerrarDetallePago(): void {
   pagoDetalleId.value = null
+  if (route.query.pago) {
+    const query = { ...route.query }
+    delete query.pago
+    void router.replace({ name: 'tesoreria', query })
+  }
 }
+
 function abrirDetalleCobro(id: string): void {
   cobroDetalleId.value = id
+  void router.replace({
+    name: 'tesoreria',
+    query: { ...route.query, vista: 'cobros', cobro: id },
+  })
 }
+
 function cerrarDetalleCobro(): void {
   cobroDetalleId.value = null
+  if (route.query.cobro) {
+    const query = { ...route.query }
+    delete query.cobro
+    void router.replace({ name: 'tesoreria', query })
+  }
 }
 </script>
 

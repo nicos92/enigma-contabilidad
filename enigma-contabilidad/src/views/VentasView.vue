@@ -486,17 +486,38 @@ watch(
   { immediate: true },
 )
 
+watch(
+  () => route.query.tab,
+  (valor) => {
+    if (typeof valor === 'string' && ['resumen', 'factura', 'trazabilidad'].includes(valor)) {
+      tabDetalle.value = valor
+    }
+  },
+  { immediate: true },
+)
+
+watch(tabDetalle, (valor) => {
+  const venta = ventaDetalle.value
+  if (!venta) return
+  if (route.query.tab === valor) return
+  void router.replace({
+    name: 'ventas',
+    query: { ...route.query, operacion: venta.id, tab: valor },
+  })
+})
+
 function abrirDetalle(id: string): void {
   ventaDetalleId.value = id
   tabDetalle.value = 'resumen'
-  void router.replace({ name: 'ventas', query: { ...route.query, operacion: id } })
+  void router.replace({ name: 'ventas', query: { ...route.query, operacion: id, tab: 'resumen' } })
 }
 
 function cerrarDetalle(): void {
   ventaDetalleId.value = null
-  if (route.query.operacion) {
+  if (route.query.operacion || route.query.tab) {
     const query = { ...route.query }
     delete query.operacion
+    delete query.tab
     void router.replace({ name: 'ventas', query })
   }
 }

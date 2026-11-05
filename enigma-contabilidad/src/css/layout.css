@@ -844,6 +844,26 @@
   outline: 0;
 }
 
+/* Modo presentación -------------------------------------------------------- */
+.app-shell--presentacion .app-sidebar,
+.app-shell--presentacion .app-topbar,
+.app-shell--presentacion .app-overlay,
+.app-shell--presentacion .skip-link {
+  display: none !important;
+}
+
+.app-shell--presentacion .app-body {
+  width: 100%;
+}
+
+.app-shell--presentacion .app-main {
+  padding: var(--espacio-8) var(--espacio-8) 250px;
+}
+
+.app-shell--presentacion .app-main__contenedor {
+  max-width: 1440px;
+}
+
 /* Overlay móvil ------------------------------------------------------------ */
 .app-overlay {
   display: none;

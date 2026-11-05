@@ -84,4 +84,23 @@ describe('useUiStore', () => {
     ui.cerrarMenuMovil()
     expect(ui.sidebarMovilAbierta).toBe(false)
   })
+
+  it('activa, alterna y desactiva el modo presentación', () => {
+    const ui = useUiStore()
+
+    expect(ui.modoPresentacion).toBe(false)
+
+    ui.activarModoPresentacion()
+    expect(ui.modoPresentacion).toBe(true)
+
+    ui.alternarModoPresentacion()
+    expect(ui.modoPresentacion).toBe(false)
+
+    ui.abrirMenuMovil()
+    ui.activarModoPresentacion()
+    expect(ui.sidebarMovilAbierta).toBe(false)
+
+    ui.desactivarModoPresentacion()
+    expect(ui.modoPresentacion).toBe(false)
+  })
 })

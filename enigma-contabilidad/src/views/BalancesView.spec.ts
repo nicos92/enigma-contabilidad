@@ -88,4 +88,15 @@ describe('BalancesView', () => {
       'Movimientos del Libro Mayor que explican el saldo del Balance de Comprobación',
     )
   })
+
+  it('abre el detalle de una cuenta desde el enlace profundo', async () => {
+    await montar('/balances?vista=comprobacion&cuenta=1.1.02')
+    await flushPromises()
+
+    expect(document.body.textContent).toContain('Cuenta 1.1.02')
+    expect(document.body.textContent).toContain('Saldo final')
+    expect(document.body.textContent).toContain(
+      'Movimientos del Libro Mayor que explican el saldo del Balance de Comprobación',
+    )
+  })
 })

@@ -43,6 +43,7 @@ function guardarSidebarColapsada(valor: boolean): void {
 export const useUiStore = defineStore('ui', () => {
   const sidebarColapsada = ref(leerSidebarColapsada())
   const sidebarMovilAbierta = ref(false)
+  const modoPresentacion = ref(false)
   const notificaciones = ref<Notificacion[]>([])
   let siguienteId = 1
 
@@ -61,6 +62,20 @@ export const useUiStore = defineStore('ui', () => {
 
   function alternarMenuMovil(): void {
     sidebarMovilAbierta.value = !sidebarMovilAbierta.value
+  }
+
+  function activarModoPresentacion(): void {
+    modoPresentacion.value = true
+    sidebarMovilAbierta.value = false
+  }
+
+  function desactivarModoPresentacion(): void {
+    modoPresentacion.value = false
+  }
+
+  function alternarModoPresentacion(): void {
+    modoPresentacion.value = !modoPresentacion.value
+    if (modoPresentacion.value) sidebarMovilAbierta.value = false
   }
 
   function notificar(entrada: EntradaNotificacion): number {
@@ -86,11 +101,15 @@ export const useUiStore = defineStore('ui', () => {
   return {
     sidebarColapsada,
     sidebarMovilAbierta,
+    modoPresentacion,
     notificaciones,
     alternarSidebar,
     abrirMenuMovil,
     cerrarMenuMovil,
     alternarMenuMovil,
+    activarModoPresentacion,
+    desactivarModoPresentacion,
+    alternarModoPresentacion,
     notificar,
     cerrarNotificacion,
     limpiarNotificaciones,
