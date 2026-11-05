@@ -672,51 +672,6 @@ table {
   white-space: nowrap;
 }
 
-.dashboard-recorrido {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-3);
-  list-style: none;
-}
-
-.dashboard-recorrido li {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--espacio-3);
-  padding: var(--espacio-3);
-  border: 1px solid var(--color-borde-suave);
-  border-radius: var(--radio-md);
-  background: var(--color-superficie-suave);
-}
-
-.dashboard-recorrido__numero {
-  display: grid;
-  width: 26px;
-  height: 26px;
-  flex: 0 0 auto;
-  place-items: center;
-  border-radius: var(--radio-completo);
-  background: var(--color-primario-suave);
-  color: var(--color-primario);
-  font-size: var(--texto-sm);
-  font-weight: var(--peso-semi);
-}
-
-.dashboard-recorrido a {
-  color: var(--color-primario);
-  font-size: var(--texto-md);
-  font-weight: var(--peso-semi);
-}
-
-.dashboard-recorrido a:hover {
-  text-decoration: underline;
-}
-
-.dashboard-recorrido p {
-  margin-top: 2px;
-  font-size: var(--texto-sm);
-}
-
 @media (max-width: 1280px) {
   .dashboard__kpis {
     grid-template-columns: repeat(3, minmax(0, 1fr));

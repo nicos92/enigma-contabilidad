@@ -71,4 +71,17 @@ describe('DashboardView', () => {
     expect(wrapper.text()).toContain('Recorrido guiado')
     expect(wrapper.text()).toContain('Ingresos y egresos por semana')
   })
+
+  it('abre la pantalla de trazabilidad desde el acceso al recorrido guiado', async () => {
+    const wrapper = await montarDashboard()
+    const boton = wrapper
+      .findAll('button')
+      .find((actual) => actual.text().includes('Recorrido guiado'))
+
+    expect(boton).toBeDefined()
+    await boton!.trigger('click')
+    await flushPromises()
+
+    expect(router.currentRoute.value.name).toBe('trazabilidad')
+  })
 })

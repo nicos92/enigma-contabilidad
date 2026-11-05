@@ -14,12 +14,11 @@ import {
   ShoppingCart,
   Wallet,
 } from '@lucide/vue'
-import { computed, ref, type Component } from 'vue'
-import { RouterLink, type RouteLocationRaw } from 'vue-router'
+import { computed, type Component } from 'vue'
+import { RouterLink, useRouter, type RouteLocationRaw } from 'vue-router'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppCard from '@/components/ui/AppCard.vue'
-import AppModal from '@/components/ui/AppModal.vue'
 import DataTable from '@/components/ui/DataTable.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import GraficoIngresosEgresos from '@/components/dashboard/GraficoIngresosEgresos.vue'
@@ -52,13 +51,8 @@ interface AccesoRapido {
   to: RouteLocationRaw
 }
 
-interface PasoRecorrido {
-  titulo: string
-  descripcion: string
-  to: RouteLocationRaw
-}
-
 const contabilidad = useContabilidadStore()
+const router = useRouter()
 
 const empresa = computed(() => contabilidad.estado.empresa)
 const periodo = computed(() => contabilidad.estado.periodo)
@@ -297,35 +291,9 @@ const accesosRapidos: readonly AccesoRapido[] = [
   },
 ]
 
-const pasosRecorrido: readonly PasoRecorrido[] = [
-  {
-    titulo: 'Compras y ventas',
-    descripcion: 'La operación comercial inicia el circuito y genera su documentación.',
-    to: { name: 'compras' },
-  },
-  {
-    titulo: 'Tesorería',
-    descripcion: 'Los pagos y cobros actualizan caja, banco y los saldos de terceros.',
-    to: { name: 'tesoreria', query: { vista: 'movimientos' } },
-  },
-  {
-    titulo: 'Contaduría',
-    descripcion: 'La bandeja concentra los documentos pendientes de aprobación y registración.',
-    to: { name: 'contaduria', query: { vista: 'bandeja' } },
-  },
-  {
-    titulo: 'Libros contables',
-    descripcion: 'El Diario y el Mayor se derivan de los asientos registrados.',
-    to: { name: 'libros', query: { vista: 'diario' } },
-  },
-  {
-    titulo: 'Balances y estados',
-    descripcion: 'El cierre del período se refleja en los estados contables.',
-    to: { name: 'balances', query: { vista: 'comprobacion' } },
-  },
-]
-
-const recorridoAbierto = ref(false)
+function abrirRecorridoGuiado(): void {
+  void router.push({ name: 'trazabilidad' })
+}
 </script>
 
 <template>
@@ -342,7 +310,7 @@ const recorridoAbierto = ref(false)
         <AppBadge :tipo="conciliado ? 'exito' : 'error'" punto>
           {{ conciliado ? 'Contabilidad conciliada' : 'Revisar contabilidad' }}
         </AppBadge>
-        <AppButton variante="secundario" @click="recorridoAbierto = true">
+        <AppButton variante="secundario" @click="abrirRecorridoGuiado">
           <Route :size="16" aria-hidden="true" />
           Recorrido guiado
         </AppButton>
@@ -592,35 +560,5 @@ const recorridoAbierto = ref(false)
         </AppCard>
       </div>
     </div>
-
-    <AppModal
-      v-model="recorridoAbierto"
-      titulo="Recorrido guiado"
-      descripcion="Un camino sugerido para presentar el circuito completo de una operación."
-      tamano="lg"
-    >
-      <ol class="dashboard-recorrido">
-        <li v-for="(paso, indice) in pasosRecorrido" :key="paso.titulo">
-          <span class="dashboard-recorrido__numero" aria-hidden="true">{{ indice + 1 }}</span>
-          <div>
-            <RouterLink :to="paso.to" @click="recorridoAbierto = false">
-              {{ paso.titulo }}
-            </RouterLink>
-            <p class="texto-suave">{{ paso.descripcion }}</p>
-          </div>
-        </li>
-      </ol>
-
-      <template #pie>
-        <AppButton variante="secundario" @click="recorridoAbierto = false">Cerrar</AppButton>
-        <RouterLink
-          class="ui-button ui-button--primario"
-          :to="{ name: 'contaduria', query: { vista: 'bandeja' } }"
-          @click="recorridoAbierto = false"
-        >
-          Ir a la bandeja
-        </RouterLink>
-      </template>
-    </AppModal>
   </section>
 </template>
