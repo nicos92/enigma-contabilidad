@@ -116,6 +116,15 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/balances',
+    name: 'balances',
+    component: () => import('@/views/BalancesView.vue'),
+    meta: {
+      titulo: 'Balances y estados',
+      descripcion: 'Balance de comprobación y estados contables.',
+    },
+  },
+  {
     path: '/maestros',
     name: 'maestros',
     component: () => import('@/views/MaestrosView.vue'),
@@ -132,7 +141,8 @@ const routes: RouteRecordRaw[] = [
         modulo.path !== 'maestros' &&
         modulo.path !== 'tesoreria' &&
         modulo.path !== 'contaduria' &&
-        modulo.path !== 'libros',
+        modulo.path !== 'libros' &&
+        modulo.path !== 'balances',
     )
     .map<RouteRecordRaw>((modulo) => ({
       path: `/${modulo.path}`,

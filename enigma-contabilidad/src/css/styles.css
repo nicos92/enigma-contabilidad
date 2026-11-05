@@ -1376,3 +1376,50 @@ table {
     margin: 0;
   }
 }
+
+/* Impresión de estados contables ------------------------------------------ */
+@media print {
+  body.imprimiendo-estados {
+    background: #fff;
+  }
+
+  body.imprimiendo-estados .app-sidebar,
+  body.imprimiendo-estados .app-topbar,
+  body.imprimiendo-estados .app-statusbar,
+  body.imprimiendo-estados .toast-stack,
+  body.imprimiendo-estados .balances__acciones,
+  body.imprimiendo-estados .balances__coherencia,
+  body.imprimiendo-estados .balances__empresa,
+  body.imprimiendo-estados .balances__nota,
+  body.imprimiendo-estados .balances__detalle-meta,
+  body.imprimiendo-estados .ui-tabs__lista {
+    display: none !important;
+  }
+
+  body.imprimiendo-estados .app-main__contenedor {
+    max-width: none;
+    padding: 0;
+  }
+
+  body.imprimiendo-estados .ui-card {
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  body.imprimiendo-estados .ui-tabs__panel {
+    padding: 0;
+  }
+
+  body.imprimiendo-estados .ui-tabla-contenedor {
+    overflow: visible;
+  }
+
+  body.imprimiendo-estados .estado,
+  body.imprimiendo-estados .estado__bloque,
+  body.imprimiendo-estados .estado__fila,
+  body.imprimiendo-estados .estado__verificacion,
+  body.imprimiendo-estados .estado-tabla tr {
+    break-inside: avoid;
+  }
+}

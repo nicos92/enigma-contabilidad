@@ -8,9 +8,12 @@ import type {
   Compra,
   Cuenta,
   DocumentoContable,
+  EstadoEvolucionPatrimonioNeto,
+  EstadoFlujoEfectivo,
   EstadoResultados,
   EstadoSituacionPatrimonial,
   FilaBalanceComprobacion,
+  FilaEvolucionPatrimonioNeto,
   FilaLibroDiario,
   LibroDiario,
   LibroMayor,
@@ -408,6 +411,363 @@ export function derivarEstadoSituacionPatrimonial(
     totalPasivoYPatrimonioNeto,
     ecuacionVerificada: diferencia === 0,
     diferencia,
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Estado de Flujo de Efectivo                                                */
+/* -------------------------------------------------------------------------- */
+
+const CUENTAS_EFECTIVO = new Set<string>([CODIGOS.CAJA, CODIGOS.BANCO])
+
+const ORDEN_FLUJO_OPERATIVO = [
+  'Cobros de clientes',
+  'Otros ingresos operativos',
+  'Pagos a proveedores',
+  'Pagos de gastos operativos',
+  'Pagos de impuestos',
+  'Otros egresos operativos',
+] as const
+
+const ORDEN_FLUJO_INVERSION = [
+  'Ventas de bienes de uso',
+  'Compras de bienes de uso',
+  'Otros ingresos de inversión',
+  'Otros egresos de inversión',
+] as const
+
+const ORDEN_FLUJO_FINANCIACION = [
+  'Aportes de capital',
+  'Préstamos obtenidos',
+  'Pagos de préstamos',
+  'Distribuciones de capital',
+  'Otros ingresos de financiación',
+  'Otros egresos de financiación',
+] as const
+
+function incrementarImporte(mapa: Map<string, number>, clave: string, importe: number): void {
+  mapa.set(clave, (mapa.get(clave) ?? 0) + importe)
+}
+
+function lineasDesdeMapa(
+  mapa: Map<string, number>,
+  orden: readonly string[],
+  prefijo: string,
+): LineaEstado[] {
+  const etiquetas = [
+    ...orden.filter((etiqueta) => mapa.has(etiqueta)),
+    ...[...mapa.keys()].filter((etiqueta) => !orden.includes(etiqueta)),
+  ]
+
+  return etiquetas.map((etiqueta, indice) => ({
+    codigo: `${prefijo}-${indice + 1}`,
+    nombre: etiqueta,
+    importe: mapa.get(etiqueta) ?? 0,
+  }))
+}
+
+function efectivoDelAsiento(asiento: Asiento): number {
+  return asiento.lineas.reduce((total, linea) => {
+    if (!CUENTAS_EFECTIVO.has(linea.cuentaId)) return total
+    return total + linea.debe - linea.haber
+  }, 0)
+}
+
+const CUENTAS_IMPOSITIVAS = new Set<string>([
+  CODIGOS.IVA_CREDITO,
+  CODIGOS.IVA_SALDO_FAVOR,
+  CODIGOS.IVA_DEBITO,
+  CODIGOS.IVA_A_PAGAR,
+  CODIGOS.IMPUESTO_GANANCIAS,
+  CODIGOS.IMPUESTO_GANANCIAS_A_PAGAR,
+])
+
+function esCuentaImpositiva(codigo: string): boolean {
+  return CUENTAS_IMPOSITIVAS.has(codigo)
+}
+
+function clasificarFlujo(
+  asiento: Asiento,
+  flujo: number,
+  rubros: ReadonlySet<string>,
+  cuentasContrapartida: ReadonlySet<string>,
+): { actividad: 'operativa' | 'inversion' | 'financiacion'; etiqueta: string } {
+  if (rubros.has('activo_no_corriente')) {
+    return {
+      actividad: 'inversion',
+      etiqueta: flujo > 0 ? 'Ventas de bienes de uso' : 'Compras de bienes de uso',
+    }
+  }
+
+  if (rubros.has('patrimonio') || rubros.has('pasivo_no_corriente')) {
+    if (rubros.has('patrimonio')) {
+      return {
+        actividad: 'financiacion',
+        etiqueta: flujo > 0 ? 'Aportes de capital' : 'Distribuciones de capital',
+      }
+    }
+    return {
+      actividad: 'financiacion',
+      etiqueta: flujo > 0 ? 'Préstamos obtenidos' : 'Pagos de préstamos',
+    }
+  }
+
+  if (flujo > 0) {
+    return {
+      actividad: 'operativa',
+      etiqueta:
+        asiento.origen === 'cobro' || asiento.origen === 'venta'
+          ? 'Cobros de clientes'
+          : 'Otros ingresos operativos',
+    }
+  }
+
+  if (asiento.origen === 'pago' || asiento.origen === 'compra') {
+    return { actividad: 'operativa', etiqueta: 'Pagos a proveedores' }
+  }
+
+  if (asiento.origen === 'gasto' || rubros.has('gasto_operativo')) {
+    return { actividad: 'operativa', etiqueta: 'Pagos de gastos operativos' }
+  }
+
+  const pagaImpuestos =
+    asiento.origen === 'impuesto' ||
+    rubros.has('impuesto') ||
+    [...cuentasContrapartida].some((codigo) => esCuentaImpositiva(codigo))
+
+  return {
+    actividad: 'operativa',
+    etiqueta: pagaImpuestos ? 'Pagos de impuestos' : 'Otros egresos operativos',
+  }
+}
+
+/**
+ * Deriva el Estado de Flujo de Efectivo por el método directo a partir de los
+ * asientos registrados. La apertura se presenta como saldo inicial y las
+ * transferencias internas entre caja y banco no generan flujo.
+ */
+export function derivarEstadoFlujoEfectivo(
+  balance: BalanceComprobacion,
+  cuentas: readonly Cuenta[],
+  asientos: readonly Asiento[],
+  rango?: RangoFechas,
+): EstadoFlujoEfectivo {
+  const cuentasPorCodigo = mapaCuentas(cuentas)
+  const registrados = asientos.filter((asiento) => asiento.estado === 'registrado')
+
+  const apertura = registrados.filter((asiento) => asiento.origen === 'apertura')
+  const anteriores = registrados.filter(
+    (asiento) => asiento.origen !== 'apertura' && antesDelRango(asiento.fecha, rango),
+  )
+  const saldoInicial = [...apertura, ...anteriores].reduce(
+    (total, asiento) => total + efectivoDelAsiento(asiento),
+    0,
+  )
+
+  const operativas = new Map<string, number>()
+  const inversiones = new Map<string, number>()
+  const financiaciones = new Map<string, number>()
+
+  for (const asiento of registrados) {
+    if (asiento.origen === 'apertura') continue
+    if (!dentroDelRango(asiento.fecha, rango)) continue
+
+    const flujo = efectivoDelAsiento(asiento)
+    if (flujo === 0) continue
+
+    const lineasContrapartida = asiento.lineas.filter(
+      (linea) => !CUENTAS_EFECTIVO.has(linea.cuentaId) && (linea.debe > 0 || linea.haber > 0),
+    )
+    const rubros = new Set(
+      lineasContrapartida
+        .map((linea) => cuentasPorCodigo.get(linea.cuentaId)?.rubro)
+        .filter((rubro): rubro is NonNullable<typeof rubro> => Boolean(rubro)),
+    )
+    const cuentasContrapartida = new Set(lineasContrapartida.map((linea) => linea.cuentaId))
+    const { actividad, etiqueta } = clasificarFlujo(asiento, flujo, rubros, cuentasContrapartida)
+
+    if (actividad === 'inversion') incrementarImporte(inversiones, etiqueta, flujo)
+    else if (actividad === 'financiacion') incrementarImporte(financiaciones, etiqueta, flujo)
+    else incrementarImporte(operativas, etiqueta, flujo)
+  }
+
+  const actividadesOperativas = lineasDesdeMapa(operativas, ORDEN_FLUJO_OPERATIVO, 'FO')
+  const actividadesInversion = lineasDesdeMapa(inversiones, ORDEN_FLUJO_INVERSION, 'FI')
+  const actividadesFinanciacion = lineasDesdeMapa(financiaciones, ORDEN_FLUJO_FINANCIACION, 'FF')
+
+  const totalActividadesOperativas = actividadesOperativas.reduce(
+    (total, linea) => total + linea.importe,
+    0,
+  )
+  const totalActividadesInversion = actividadesInversion.reduce(
+    (total, linea) => total + linea.importe,
+    0,
+  )
+  const totalActividadesFinanciacion = actividadesFinanciacion.reduce(
+    (total, linea) => total + linea.importe,
+    0,
+  )
+  const variacionNeta =
+    totalActividadesOperativas + totalActividadesInversion + totalActividadesFinanciacion
+  const saldoFinal = saldoInicial + variacionNeta
+
+  const saldoContable = balance.filas
+    .filter((fila) => CUENTAS_EFECTIVO.has(fila.cuentaId))
+    .reduce((total, fila) => total + fila.saldoDeudor - fila.saldoAcreedor, 0)
+
+  return {
+    saldoInicial,
+    actividadesOperativas,
+    totalActividadesOperativas,
+    actividadesInversion,
+    totalActividadesInversion,
+    actividadesFinanciacion,
+    totalActividadesFinanciacion,
+    variacionNeta,
+    saldoFinal,
+    saldoContable,
+    conciliado: saldoFinal === saldoContable,
+    diferencia: saldoFinal - saldoContable,
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Estado de Evolución del Patrimonio Neto                                    */
+/* -------------------------------------------------------------------------- */
+
+function variacionPatrimonio(
+  asientos: readonly Asiento[],
+  cuentasPatrimonio: ReadonlySet<string>,
+  cuentasCapital: ReadonlySet<string>,
+  soloCapital: boolean,
+): number {
+  let total = 0
+
+  for (const asiento of asientos) {
+    for (const linea of asiento.lineas) {
+      if (!cuentasPatrimonio.has(linea.cuentaId)) continue
+      const esCapital = cuentasCapital.has(linea.cuentaId)
+      if (soloCapital !== esCapital) continue
+      total += linea.haber - linea.debe
+    }
+  }
+
+  return total
+}
+
+/**
+ * Deriva la evolución del patrimonio neto a partir del Balance de Comprobación,
+ * el resultado del ejercicio y los movimientos registrados en cuentas de
+ * patrimonio. El saldo final se concilia con el Estado de Situación Patrimonial.
+ */
+export function derivarEstadoEvolucionPatrimonioNeto(
+  balance: BalanceComprobacion,
+  cuentas: readonly Cuenta[],
+  resultado: EstadoResultados,
+  asientos: readonly Asiento[],
+  rango?: RangoFechas,
+): EstadoEvolucionPatrimonioNeto {
+  const cuentasPatrimonio = new Set(
+    cuentas
+      .filter((cuenta) => cuenta.imputable && cuenta.rubro === 'patrimonio')
+      .map((cuenta) => cuenta.codigo),
+  )
+  const cuentasCapital = new Set(
+    cuentas
+      .filter((cuenta) => cuenta.imputable && cuenta.codigo === CODIGOS.CAPITAL)
+      .map((cuenta) => cuenta.codigo),
+  )
+
+  const registrados = asientos.filter((asiento) => asiento.estado === 'registrado')
+  const anteriores = registrados.filter((asiento) => antesDelRango(asiento.fecha, rango))
+  const enPeriodo = registrados.filter((asiento) => dentroDelRango(asiento.fecha, rango))
+
+  const capitalInicial = variacionPatrimonio(anteriores, cuentasPatrimonio, cuentasCapital, true)
+  const resultadosAcumuladosIniciales = variacionPatrimonio(
+    anteriores,
+    cuentasPatrimonio,
+    cuentasCapital,
+    false,
+  )
+  const aportesCapital = variacionPatrimonio(enPeriodo, cuentasPatrimonio, cuentasCapital, true)
+  const movimientosResultados = variacionPatrimonio(
+    enPeriodo,
+    cuentasPatrimonio,
+    cuentasCapital,
+    false,
+  )
+
+  const capitalFinal = capitalInicial + aportesCapital
+  const resultadosAcumuladosFinales = resultadosAcumuladosIniciales + movimientosResultados
+  const resultadoEjercicio = resultado.resultadoEjercicio
+  const saldoInicial = capitalInicial + resultadosAcumuladosIniciales
+  const saldoFinal = capitalFinal + resultadosAcumuladosFinales + resultadoEjercicio
+
+  const capitalSegunBalance = balance.filas
+    .filter((fila) => cuentasCapital.has(fila.cuentaId))
+    .reduce((total, fila) => total + importeAcreedor(fila), 0)
+  const resultadosSegunBalance = balance.filas
+    .filter((fila) => cuentasPatrimonio.has(fila.cuentaId) && !cuentasCapital.has(fila.cuentaId))
+    .reduce((total, fila) => total + importeAcreedor(fila), 0)
+  const totalPatrimonioNeto = capitalSegunBalance + resultadosSegunBalance + resultadoEjercicio
+
+  const filas: FilaEvolucionPatrimonioNeto[] = [
+    {
+      concepto: 'Saldo inicial',
+      capital: capitalInicial,
+      resultadosAcumulados: resultadosAcumuladosIniciales,
+      resultadoEjercicio: 0,
+      total: saldoInicial,
+      tipo: 'saldo_inicial',
+    },
+    {
+      concepto: 'Aportes de capital',
+      capital: aportesCapital,
+      resultadosAcumulados: 0,
+      resultadoEjercicio: 0,
+      total: aportesCapital,
+      tipo: 'movimiento',
+    },
+    {
+      concepto: 'Movimientos de resultados acumulados',
+      capital: 0,
+      resultadosAcumulados: movimientosResultados,
+      resultadoEjercicio: 0,
+      total: movimientosResultados,
+      tipo: 'movimiento',
+    },
+    {
+      concepto: 'Resultado del ejercicio',
+      capital: 0,
+      resultadosAcumulados: 0,
+      resultadoEjercicio,
+      total: resultadoEjercicio,
+      tipo: 'resultado',
+    },
+    {
+      concepto: 'Saldo final',
+      capital: capitalFinal,
+      resultadosAcumulados: resultadosAcumuladosFinales,
+      resultadoEjercicio,
+      total: saldoFinal,
+      tipo: 'saldo_final',
+    },
+  ]
+
+  return {
+    filas,
+    saldoInicial,
+    capitalInicial,
+    resultadosAcumuladosIniciales,
+    aportesCapital,
+    movimientosResultados,
+    resultadoEjercicio,
+    saldoFinal,
+    capitalFinal,
+    resultadosAcumuladosFinales,
+    totalPatrimonioNeto,
+    conciliado: saldoFinal === totalPatrimonioNeto,
+    diferencia: saldoFinal - totalPatrimonioNeto,
   }
 }
 

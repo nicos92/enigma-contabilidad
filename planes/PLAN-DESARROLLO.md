@@ -6,10 +6,10 @@
 **Proyecto:** Enigma Gestión — mini ERP de demostración
 **Cliente ficticio de la demo:** Comercializadora del Sur S.R.L.
 **Período de los datos:** noviembre de 2026
-**Última actualización:** 04/11/2026
-**Estado general:** Fase 10 completada — libros contables
-**Fases completadas:** 11 / 15
-**Próxima fase:** F11 — Balances y estados
+**Última actualización:** 05/11/2026
+**Estado general:** Fase 11 completada — balances y estados
+**Fases completadas:** 12 / 15
+**Próxima fase:** F12 — Trazabilidad y recorrido guiado
 
 ---
 
@@ -144,7 +144,7 @@ En las tareas:
 | F8 | Tesorería | Pagos, cobros, movimientos y transferencias | Completado | 100% |
 | F9 | Contaduría | Bandeja, asientos y plan de cuentas | Completado | 100% |
 | F10 | Libros contables | Libro Diario y Libro Mayor | Completado | 100% |
-| F11 | Balances y estados | Comprobación, ESP, ER, flujo y evolución | Pendiente | 0% |
+| F11 | Balances y estados | Comprobación, ESP, ER, flujo y evolución | Completado | 100% |
 | F12 | Trazabilidad | Stepper integrado y recorrido guiado | Pendiente | 0% |
 | F13 | Informes y configuración | Reportes, CSV, logo y reset | Pendiente | 0% |
 | F14 | QA y entrega | Tests, build, README y aceptación | Pendiente | 0% |
@@ -582,22 +582,22 @@ En las tareas:
 
 ### F11 — Balances y estados
 
-**Estado:** Pendiente
+**Estado:** Completado
 **Depende de:** F10
 **Objetivo:** generar el balance de comprobación y los estados contables.
 
 **Tareas**
 
-- [ ] Crear Balance de Comprobación con código, cuenta, sumas Debe, sumas Haber, saldo deudor y saldo acreedor.
-- [ ] Mostrar totales generales y verificación de igualdad.
-- [ ] Permitir consultar el detalle de cada cuenta.
-- [ ] Crear Estado de Situación Patrimonial con activo corriente, no corriente, pasivo y patrimonio neto.
-- [ ] Verificar Activo = Pasivo + Patrimonio Neto.
-- [ ] Crear Estado de Resultados con ventas, costo, resultado bruto, gastos, resultado operativo, resultado antes de impuestos y resultado del ejercicio.
-- [ ] Crear Estado de Flujo de Efectivo.
-- [ ] Crear Estado de Evolución del Patrimonio Neto.
-- [ ] Agregar impresión de estados.
-- [ ] Verificar coherencia con los asientos registrados.
+- [x] Crear Balance de Comprobación con código, cuenta, sumas Debe, sumas Haber, saldo deudor y saldo acreedor.
+- [x] Mostrar totales generales y verificación de igualdad.
+- [x] Permitir consultar el detalle de cada cuenta.
+- [x] Crear Estado de Situación Patrimonial con activo corriente, no corriente, pasivo y patrimonio neto.
+- [x] Verificar Activo = Pasivo + Patrimonio Neto.
+- [x] Crear Estado de Resultados con ventas, costo, resultado bruto, gastos, resultado operativo, resultado antes de impuestos y resultado del ejercicio.
+- [x] Crear Estado de Flujo de Efectivo.
+- [x] Crear Estado de Evolución del Patrimonio Neto.
+- [x] Agregar impresión de estados.
+- [x] Verificar coherencia con los asientos registrados.
 
 **Entregable:** balances y estados contables completos.
 
@@ -773,6 +773,8 @@ Recorrido que debe poder hacerse frente al cliente:
 | 04/11/2026 | F8 | Módulo de tesorería implementado: pagos, cobros, movimientos de fondos y transferencias con validaciones e idempotencia. | Completado |
 | 04/11/2026 | F9 | Módulo de contaduría implementado: bandeja de documentos, asientos contables y plan de cuentas. | Completado |
 | 04/11/2026 | F10 | Módulo de libros contables implementado: Libro Diario y Libro Mayor derivados de los asientos registrados. | Completado |
+| 05/11/2026 | F11 | Módulo de balances y estados implementado: comprobación, ESP, ER, flujo de efectivo, evolución del patrimonio neto, detalle e impresión. | Completado |
+| 05/11/2026 | F11 | Verificaciones de coherencia entre estados y asientos registrados; 102 tests aprobados y build de producción correcto. | Completado |
 
 ---
 

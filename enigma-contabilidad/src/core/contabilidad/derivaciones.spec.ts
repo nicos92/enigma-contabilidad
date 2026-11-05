@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { construirAsiento } from '@/core/contabilidad/asientos'
 import {
   derivarBalanceComprobacion,
+  derivarEstadoEvolucionPatrimonioNeto,
+  derivarEstadoFlujoEfectivo,
   derivarEstadoResultados,
   derivarEstadoSituacionPatrimonial,
   derivarLibroDiario,
@@ -522,5 +524,129 @@ describe('Saldos de terceros', () => {
     const saldos = derivarSaldosClientes(clientes, ventas, cobros, documentos)
 
     expect(saldos).toEqual([{ id: 'cli1', nombre: 'Cliente 1', saldo: 500 }])
+  })
+})
+
+describe('Estado de Flujo de Efectivo', () => {
+  const asientos = [
+    asientoRegistrado(
+      'apertura',
+      '2026-11-01',
+      1,
+      CODIGOS.CAJA,
+      CODIGOS.CAPITAL,
+      1_000,
+      'apertura',
+    ),
+    asientoRegistrado('cobro', '2026-11-02', 2, CODIGOS.BANCO, CODIGOS.DEUDORES, 500, 'cobro'),
+    asientoRegistrado('pago', '2026-11-03', 3, CODIGOS.PROVEEDORES, CODIGOS.BANCO, 200, 'pago'),
+    asientoRegistrado('gasto', '2026-11-04', 4, CODIGOS.SUELDOS, CODIGOS.CAJA, 100, 'gasto'),
+    asientoRegistrado('equipos', '2026-11-05', 5, CODIGOS.EQUIPOS, CODIGOS.BANCO, 300, 'compra'),
+    asientoRegistrado('prestamo', '2026-11-06', 6, CODIGOS.BANCO, CODIGOS.PRESTAMOS, 400, 'ajuste'),
+    asientoRegistrado('aporte', '2026-11-07', 7, CODIGOS.BANCO, CODIGOS.CAPITAL, 600, 'ajuste'),
+    asientoRegistrado(
+      'transferencia',
+      '2026-11-08',
+      8,
+      CODIGOS.CAJA,
+      CODIGOS.BANCO,
+      50,
+      'transferencia',
+    ),
+  ]
+
+  const diario = derivarLibroDiario(asientos, CUENTAS)
+  const mayor = derivarLibroMayor(diario, CUENTAS)
+  const balance = derivarBalanceComprobacion(mayor, CUENTAS)
+
+  it('clasifica los flujos y excluye las transferencias internas', () => {
+    const flujo = derivarEstadoFlujoEfectivo(balance, CUENTAS, asientos)
+
+    expect(flujo.saldoInicial).toBe(1_000)
+    expect(flujo.actividadesOperativas).toEqual([
+      { codigo: 'FO-1', nombre: 'Cobros de clientes', importe: 500 },
+      { codigo: 'FO-2', nombre: 'Pagos a proveedores', importe: -200 },
+      { codigo: 'FO-3', nombre: 'Pagos de gastos operativos', importe: -100 },
+    ])
+    expect(flujo.totalActividadesOperativas).toBe(200)
+    expect(flujo.actividadesInversion).toEqual([
+      { codigo: 'FI-1', nombre: 'Compras de bienes de uso', importe: -300 },
+    ])
+    expect(flujo.totalActividadesInversion).toBe(-300)
+    expect(flujo.actividadesFinanciacion).toEqual([
+      { codigo: 'FF-1', nombre: 'Aportes de capital', importe: 600 },
+      { codigo: 'FF-2', nombre: 'Préstamos obtenidos', importe: 400 },
+    ])
+    expect(flujo.totalActividadesFinanciacion).toBe(1_000)
+    expect(flujo.variacionNeta).toBe(900)
+    expect(flujo.saldoFinal).toBe(1_900)
+    expect(flujo.saldoContable).toBe(1_900)
+    expect(flujo.diferencia).toBe(0)
+    expect(flujo.conciliado).toBe(true)
+  })
+
+  it('no cuenta la apertura como flujo del período', () => {
+    const flujo = derivarEstadoFlujoEfectivo(balance, CUENTAS, asientos)
+
+    expect(flujo.actividadesFinanciacion.some((linea) => linea.importe === 1_000)).toBe(false)
+  })
+})
+
+describe('Estado de Evolución del Patrimonio Neto', () => {
+  const asientos = [
+    asientoRegistrado(
+      'apertura',
+      '2026-11-01',
+      1,
+      CODIGOS.CAJA,
+      CODIGOS.CAPITAL,
+      1_000,
+      'apertura',
+    ),
+    asientoRegistrado('aporte', '2026-11-02', 2, CODIGOS.BANCO, CODIGOS.CAPITAL, 500, 'ajuste'),
+    asientoRegistrado(
+      'resultados',
+      '2026-11-03',
+      3,
+      CODIGOS.CAJA,
+      CODIGOS.RESULTADOS_ACUMULADOS,
+      100,
+      'ajuste',
+    ),
+    asientoRegistrado('venta', '2026-11-04', 4, CODIGOS.CAJA, CODIGOS.VENTAS, 300, 'venta'),
+    asientoRegistrado('gasto', '2026-11-05', 5, CODIGOS.SUELDOS, CODIGOS.CAJA, 100, 'gasto'),
+  ]
+
+  const diario = derivarLibroDiario(asientos, CUENTAS)
+  const balance = derivarBalanceComprobacion(derivarLibroMayor(diario, CUENTAS), CUENTAS)
+  const resultado = derivarEstadoResultados(balance, CUENTAS)
+
+  it('expone capital, resultados acumulados y resultado del ejercicio', () => {
+    const evolucion = derivarEstadoEvolucionPatrimonioNeto(balance, CUENTAS, resultado, asientos)
+
+    expect(evolucion.saldoInicial).toBe(0)
+    expect(evolucion.aportesCapital).toBe(1_500)
+    expect(evolucion.movimientosResultados).toBe(100)
+    expect(evolucion.resultadoEjercicio).toBe(200)
+    expect(evolucion.capitalFinal).toBe(1_500)
+    expect(evolucion.resultadosAcumuladosFinales).toBe(100)
+    expect(evolucion.saldoFinal).toBe(1_800)
+    expect(evolucion.filas.at(-1)).toMatchObject({
+      concepto: 'Saldo final',
+      capital: 1_500,
+      resultadosAcumulados: 100,
+      resultadoEjercicio: 200,
+      total: 1_800,
+      tipo: 'saldo_final',
+    })
+  })
+
+  it('se concilia con el patrimonio neto del Estado de Situación Patrimonial', () => {
+    const evolucion = derivarEstadoEvolucionPatrimonioNeto(balance, CUENTAS, resultado, asientos)
+    const situacion = derivarEstadoSituacionPatrimonial(balance, CUENTAS, resultado)
+
+    expect(evolucion.totalPatrimonioNeto).toBe(situacion.totalPatrimonioNeto)
+    expect(evolucion.diferencia).toBe(0)
+    expect(evolucion.conciliado).toBe(true)
   })
 })

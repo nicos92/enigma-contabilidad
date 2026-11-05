@@ -203,6 +203,16 @@ export const GRUPOS_NAVEGACION: readonly GrupoNavegacion[] = [
             descripcion: 'Ingresos, costos y resultado del ejercicio.',
             to: { path: '/balances', query: { vista: 'resultados' } },
           },
+          {
+            etiqueta: 'Flujo de efectivo',
+            descripcion: 'Actividades operativas, de inversión y financiación.',
+            to: { path: '/balances', query: { vista: 'flujo-efectivo' } },
+          },
+          {
+            etiqueta: 'Evolución del patrimonio neto',
+            descripcion: 'Capital, resultados acumulados y resultado del ejercicio.',
+            to: { path: '/balances', query: { vista: 'evolucion-patrimonio' } },
+          },
         ],
       },
     ],

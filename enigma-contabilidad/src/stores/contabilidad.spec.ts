@@ -111,6 +111,14 @@ describe('useContabilidadStore', () => {
 
     expect(store.estadoSituacionPatrimonial.ecuacionVerificada).toBe(true)
     expect(store.estadoResultados.resultadoEjercicio).toBe(87_875_000)
+    expect(store.estadoFlujoEfectivo.conciliado).toBe(true)
+    expect(store.estadoEvolucionPatrimonioNeto.conciliado).toBe(true)
+    expect(store.estadoEvolucionPatrimonioNeto.resultadoEjercicio).toBe(
+      store.estadoResultados.resultadoEjercicio,
+    )
+    expect(store.estadoEvolucionPatrimonioNeto.totalPatrimonioNeto).toBe(
+      store.estadoSituacionPatrimonial.totalPatrimonioNeto,
+    )
 
     store.aprobarDocumento('doc-compra-C-008')
     store.aprobarDocumento('doc-venta-V-008')
@@ -118,6 +126,15 @@ describe('useContabilidadStore', () => {
     expect(store.balanceComprobacion.balanceado).toBe(true)
     expect(store.estadoSituacionPatrimonial.ecuacionVerificada).toBe(true)
     expect(store.estadoSituacionPatrimonial.diferencia).toBe(0)
+    expect(store.estadoFlujoEfectivo.conciliado).toBe(true)
+    expect(store.estadoEvolucionPatrimonioNeto.conciliado).toBe(true)
+    expect(store.coherenciaEstados).toEqual({
+      balanceCierra: true,
+      ecuacionPatrimonial: true,
+      resultadoCoincide: true,
+      evolucionConciliada: true,
+      flujoConciliado: true,
+    })
   })
 
   it('rechaza documentos inexistentes', () => {

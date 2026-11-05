@@ -422,6 +422,51 @@ export interface EstadoSituacionPatrimonial {
   diferencia: number
 }
 
+export interface EstadoFlujoEfectivo {
+  saldoInicial: number
+  actividadesOperativas: LineaEstado[]
+  totalActividadesOperativas: number
+  actividadesInversion: LineaEstado[]
+  totalActividadesInversion: number
+  actividadesFinanciacion: LineaEstado[]
+  totalActividadesFinanciacion: number
+  variacionNeta: number
+  saldoFinal: number
+  /** Saldo de caja y banco según el Balance de Comprobación. */
+  saldoContable: number
+  conciliado: boolean
+  diferencia: number
+}
+
+export type TipoFilaEvolucionPatrimonio =
+  'saldo_inicial' | 'movimiento' | 'resultado' | 'saldo_final'
+
+export interface FilaEvolucionPatrimonioNeto {
+  concepto: string
+  capital: number
+  resultadosAcumulados: number
+  resultadoEjercicio: number
+  total: number
+  tipo: TipoFilaEvolucionPatrimonio
+}
+
+export interface EstadoEvolucionPatrimonioNeto {
+  filas: FilaEvolucionPatrimonioNeto[]
+  saldoInicial: number
+  capitalInicial: number
+  resultadosAcumuladosIniciales: number
+  aportesCapital: number
+  movimientosResultados: number
+  resultadoEjercicio: number
+  saldoFinal: number
+  capitalFinal: number
+  resultadosAcumuladosFinales: number
+  /** Patrimonio neto del Estado de Situación Patrimonial, incluido el resultado. */
+  totalPatrimonioNeto: number
+  conciliado: boolean
+  diferencia: number
+}
+
 export interface StockProducto {
   productoId: string
   codigo: string

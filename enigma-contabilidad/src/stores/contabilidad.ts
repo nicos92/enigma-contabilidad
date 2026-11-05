@@ -3,6 +3,8 @@ import { defineStore } from 'pinia'
 import {
   asientoBalanceado,
   derivarBalanceComprobacion,
+  derivarEstadoEvolucionPatrimonioNeto,
+  derivarEstadoFlujoEfectivo,
   derivarEstadoResultados,
   derivarEstadoSituacionPatrimonial,
   derivarLibroDiario,
@@ -207,6 +209,33 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
       estadoResultados.value,
     ),
   )
+
+  const estadoFlujoEfectivo = computed(() =>
+    derivarEstadoFlujoEfectivo(
+      balanceComprobacion.value,
+      estado.value.cuentas,
+      estado.value.asientos,
+    ),
+  )
+
+  const estadoEvolucionPatrimonioNeto = computed(() =>
+    derivarEstadoEvolucionPatrimonioNeto(
+      balanceComprobacion.value,
+      estado.value.cuentas,
+      estadoResultados.value,
+      estado.value.asientos,
+    ),
+  )
+
+  const coherenciaEstados = computed(() => ({
+    balanceCierra: balanceComprobacion.value.balanceado,
+    ecuacionPatrimonial: estadoSituacionPatrimonial.value.ecuacionVerificada,
+    resultadoCoincide:
+      estadoResultados.value.resultadoEjercicio ===
+      estadoEvolucionPatrimonioNeto.value.resultadoEjercicio,
+    evolucionConciliada: estadoEvolucionPatrimonioNeto.value.conciliado,
+    flujoConciliado: estadoFlujoEfectivo.value.conciliado,
+  }))
 
   /* Tesorería -------------------------------------------------------------- */
   const movimientosTesoreria = computed(() =>
@@ -1001,6 +1030,9 @@ export const useContabilidadStore = defineStore('contabilidad', () => {
     balanceComprobacion,
     estadoResultados,
     estadoSituacionPatrimonial,
+    estadoFlujoEfectivo,
+    estadoEvolucionPatrimonioNeto,
+    coherenciaEstados,
     movimientosTesoreria,
     saldosTesoreria,
     comprasRegistradas,
