@@ -7,9 +7,9 @@
 **Cliente ficticio de la demo:** Comercializadora del Sur S.R.L.
 **Período de los datos:** noviembre de 2026
 **Última actualización:** 05/11/2026
-**Estado general:** Fase 11 completada — balances y estados
-**Fases completadas:** 12 / 15
-**Próxima fase:** F12 — Trazabilidad y recorrido guiado
+**Estado general:** Fase 12 completada — trazabilidad y recorrido guiado
+**Fases completadas:** 13 / 15
+**Próxima fase:** F13 — Informes y configuración
 
 ---
 
@@ -145,7 +145,7 @@ En las tareas:
 | F9 | Contaduría | Bandeja, asientos y plan de cuentas | Completado | 100% |
 | F10 | Libros contables | Libro Diario y Libro Mayor | Completado | 100% |
 | F11 | Balances y estados | Comprobación, ESP, ER, flujo y evolución | Completado | 100% |
-| F12 | Trazabilidad | Stepper integrado y recorrido guiado | Pendiente | 0% |
+| F12 | Trazabilidad | Stepper integrado y recorrido guiado | Completado | 100% |
 | F13 | Informes y configuración | Reportes, CSV, logo y reset | Pendiente | 0% |
 | F14 | QA y entrega | Tests, build, README y aceptación | Pendiente | 0% |
 
@@ -612,19 +612,35 @@ En las tareas:
 
 ### F12 — Trazabilidad y recorrido guiado
 
-**Estado:** Pendiente
+**Estado:** Completado
 **Depende de:** F5 a F11
 **Objetivo:** demostrar visualmente el recorrido completo de una operación.
 
 **Tareas**
 
-- [ ] Crear selector de operación (compra o venta).
-- [ ] Mostrar departamento de origen, documento, autorización, tesorería, contaduría, asiento, diario, mayor y balance.
-- [ ] Implementar enlaces entre etapas.
-- [ ] Mostrar estados y fechas de cada etapa.
-- [ ] Crear recorrido guiado con los 13 pasos del criterio de aceptación.
-- [ ] Implementar modo presentación opcional.
-- [ ] Verificar que una operación nueva recorra todas las etapas.
+- [x] Crear selector de operación (compra o venta).
+- [x] Mostrar departamento de origen, documento, autorización, tesorería, contaduría, asiento, diario, mayor y balance.
+- [x] Implementar enlaces entre etapas.
+- [x] Mostrar estados y fechas de cada etapa.
+- [x] Crear recorrido guiado con los 13 pasos del criterio de aceptación.
+- [x] Implementar modo presentación opcional.
+- [x] Verificar que una operación nueva recorra todas las etapas.
+
+**Implementación**
+
+- `src/core/trazabilidad.ts`: construye las nueve etapas de una compra o venta, con estado, fecha, referencia, importe y enlace a la pantalla donde ocurre cada paso.
+- `src/core/recorrido.ts`: arma los 13 pasos del criterio de aceptación enlazando una compra y una venta concretas.
+- `src/stores/recorrido.ts`: mantiene el recorrido abierto y el paso actual aunque se navegue entre módulos.
+- `src/components/recorrido/RecorridoGuiado.vue`: barra global con progreso, pasos, atajos de teclado y modo presentación.
+- `src/views/TrazabilidadView.vue`: selector compra/venta, resumen del circuito, nueve etapas enlazadas, verificación y recorrido guiado de 13 pasos.
+- Enlaces profundos incorporados en Compras, Ventas, Tesorería, Contaduría, Libros y Balances para abrir directamente la operación, el comprobante, el asiento o la cuenta involucrada.
+
+**Verificación**
+
+- La compra demo `C-001` recorre origen, factura, pago, Contaduría, autorización, asiento, Diario, Mayor y Balance.
+- La venta demo `V-001` recorre origen, factura, cobro, Contaduría, autorización, asiento, Diario, Mayor y Balance.
+- Una compra nueva registrada en la prueba automatizada completa las nueve etapas al aprobar su documento y registrar el pago total.
+- 129 tests aprobados; `typecheck`, `lint`, `format:check` y build de producción correctos.
 
 **Entregable:** pantalla de trazabilidad y demo guiada.
 
@@ -775,6 +791,10 @@ Recorrido que debe poder hacerse frente al cliente:
 | 04/11/2026 | F10 | Módulo de libros contables implementado: Libro Diario y Libro Mayor derivados de los asientos registrados. | Completado |
 | 05/11/2026 | F11 | Módulo de balances y estados implementado: comprobación, ESP, ER, flujo de efectivo, evolución del patrimonio neto, detalle e impresión. | Completado |
 | 05/11/2026 | F11 | Verificaciones de coherencia entre estados y asientos registrados; 102 tests aprobados y build de producción correcto. | Completado |
+| 05/11/2026 | F12 | Pantalla de trazabilidad implementada: selector compra/venta, nueve etapas con estado, fecha, referencia, importe y enlace a su pantalla. | Completado |
+| 05/11/2026 | F12 | Recorrido guiado global de 13 pasos con navegación automática, atajos de teclado y modo presentación. | Completado |
+| 05/11/2026 | F12 | Enlaces profundos agregados en Compras, Ventas, Tesorería, Contaduría, Libros y Balances. | Completado |
+| 05/11/2026 | F12 | Verificación de compra nueva recorriendo las nueve etapas; 129 tests aprobados y build de producción correcto. | Completado |
 
 ---
 

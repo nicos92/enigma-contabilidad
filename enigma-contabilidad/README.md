@@ -54,11 +54,15 @@ src/
 
 ## Rutas disponibles
 
-`/dashboard`, `/compras`, `/ventas`, `/tesoreria`, `/contaduria`, `/libros`, `/balances`,
-`/maestros`, `/informes` y `/configuracion`. Las secciones fuera de la fase 1 muestran un
-estado provisional hasta que se implementen.
+`/dashboard`, `/trazabilidad`, `/compras`, `/ventas`, `/tesoreria`, `/contaduria`, `/libros`,
+`/balances`, `/maestros`, `/informes` y `/configuracion`.
+
+La pantalla `/trazabilidad` permite seguir una compra o una venta desde su origen hasta el
+balance, abrir la pantalla de cada etapa y presentar el recorrido guiado de 13 pasos.
+`/informes` y `/configuracion` corresponden a la fase F13 y muestran su estado provisional.
 
 ## Estado del proyecto
 
-Fase 1 completada: scaffold, tooling, router, Pinia y pruebas de humo. El detalle de las
-fases siguientes está en [`../planes/PLAN-DESARROLLO.md`](../planes/PLAN-DESARROLLO.md).
+Fases F0 a F12 completadas: dominio contable, dashboard, compras, ventas, maestros, tesorería,
+contaduría, libros, balances y trazabilidad con recorrido guiado. El detalle de las fases
+siguientes está en [`../planes/PLAN-DESARROLLO.md`](../planes/PLAN-DESARROLLO.md).
