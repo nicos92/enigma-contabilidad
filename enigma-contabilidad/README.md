@@ -59,10 +59,14 @@ src/
 
 La pantalla `/trazabilidad` permite seguir una compra o una venta desde su origen hasta el
 balance, abrir la pantalla de cada etapa y presentar el recorrido guiado de 13 pasos.
-`/informes` y `/configuracion` corresponden a la fase F13 y muestran su estado provisional.
+`/informes` reúne ventas por cliente, compras por proveedor, IVA del período y top de productos,
+con filtro de fechas y exportación CSV. `/configuracion` permite editar la empresa y el usuario
+ficticio, cargar o quitar el logo, consultar el esquema y el almacenamiento usado, y restaurar
+los datos demo originales.
 
 ## Estado del proyecto
 
-Fases F0 a F12 completadas: dominio contable, dashboard, compras, ventas, maestros, tesorería,
-contaduría, libros, balances y trazabilidad con recorrido guiado. El detalle de las fases
-siguientes está en [`../planes/PLAN-DESARROLLO.md`](../planes/PLAN-DESARROLLO.md).
+Fases F0 a F13 completadas: dominio contable, dashboard, compras, ventas, maestros, tesorería,
+contaduría, libros, balances, trazabilidad con recorrido guiado, informes y configuración. El
+detalle de la fase de QA y entrega está en
+[`../planes/PLAN-DESARROLLO.md`](../planes/PLAN-DESARROLLO.md).

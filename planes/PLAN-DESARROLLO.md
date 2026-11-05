@@ -7,9 +7,9 @@
 **Cliente ficticio de la demo:** Comercializadora del Sur S.R.L.
 **Período de los datos:** noviembre de 2026
 **Última actualización:** 05/11/2026
-**Estado general:** Fase 12 completada — trazabilidad y recorrido guiado
-**Fases completadas:** 13 / 15
-**Próxima fase:** F13 — Informes y configuración
+**Estado general:** Fase 13 completada — informes y configuración
+**Fases completadas:** 14 / 15
+**Próxima fase:** F14 — QA y entrega
 
 ---
 
@@ -146,7 +146,7 @@ En las tareas:
 | F10 | Libros contables | Libro Diario y Libro Mayor | Completado | 100% |
 | F11 | Balances y estados | Comprobación, ESP, ER, flujo y evolución | Completado | 100% |
 | F12 | Trazabilidad | Stepper integrado y recorrido guiado | Completado | 100% |
-| F13 | Informes y configuración | Reportes, CSV, logo y reset | Pendiente | 0% |
+| F13 | Informes y configuración | Reportes, CSV, logo y reset | Completado | 100% |
 | F14 | QA y entrega | Tests, build, README y aceptación | Pendiente | 0% |
 
 ---
@@ -655,21 +655,39 @@ En las tareas:
 
 ### F13 — Informes y configuración
 
-**Estado:** Pendiente
+**Estado:** Completado
 **Depende de:** F2 a F11
 **Objetivo:** completar la experiencia con reportes y ajustes de la demo.
 
 **Tareas**
 
-- [ ] Crear informes de ventas por cliente, compras por proveedor, IVA del período y top de productos.
-- [ ] Agregar filtros por período.
-- [ ] Agregar exportación CSV.
-- [ ] Crear pantalla de configuración con datos de la empresa.
-- [ ] Implementar carga y previsualización de logo.
-- [ ] Implementar restauración de datos demo con confirmación.
-- [ ] Mostrar versión del esquema y uso de almacenamiento.
-- [ ] Agregar datos de usuario ficticio.
-- [ ] Verificar que la configuración persista.
+- [x] Crear informes de ventas por cliente, compras por proveedor, IVA del período y top de productos.
+- [x] Agregar filtros por período.
+- [x] Agregar exportación CSV.
+- [x] Crear pantalla de configuración con datos de la empresa.
+- [x] Implementar carga y previsualización de logo.
+- [x] Implementar restauración de datos demo con confirmación.
+- [x] Mostrar versión del esquema y uso de almacenamiento.
+- [x] Agregar datos de usuario ficticio.
+- [x] Verificar que la configuración persista.
+
+**Implementación**
+
+- `src/core/informes.ts`: filtros por período y construcción de los cuatro reportes a partir de operaciones con documento registrado. Los cobros y pagos aplicados incluyen todos los comprobantes registrados de cada operación, aunque su fecha esté fuera del rango consultado.
+- `src/core/informes.ts`: exportación CSV estándar con comas, CRLF, escapes, importes en pesos con dos decimales y descarga con BOM UTF-8.
+- `src/views/InformesView.vue`: pantalla con pestañas sincronizadas con `?vista=`, filtro de fechas, resumen del período, tablas por cliente/proveedor, liquidación de IVA por alícuota y ranking de productos.
+- `src/views/ConfiguracionView.vue`: edición y guardado de datos de empresa y usuario ficticio, carga/reemplazo/eliminación de logo con previsualización, versión del esquema, uso estimado de `localStorage`, cantidad de registros y restauración demo con confirmación.
+- `src/core/persistencia.ts` y `src/stores/contabilidad.ts`: persistencia del usuario y la empresa, compatibilidad con estados guardados sin usuario y cálculo del espacio utilizado.
+- `src/data/catalogos.ts` y `src/data/demo.ts`: usuario demo inicial y datos de empresa restaurados por el reset.
+- Navegación y router: ruta `/informes` con submenú por reporte y `/configuracion` con la pantalla completa.
+
+**Verificación**
+
+- Los totales de ventas, compras, IVA y top de productos coinciden con las operaciones registradas del período; las facturas pendientes `V-008` y `C-008` no alteran los reportes.
+- Los cobros y pagos aplicados se computan aunque hayan ocurrido fuera del rango de fechas consultado.
+- La exportación CSV se descarga con encabezados, totales, escapes y BOM UTF-8.
+- Los cambios de empresa, usuario y logo persisten al recargar; la restauración demo recupera la empresa, el usuario, el logo, los maestros y las operaciones originales.
+- 152 tests aprobados; `typecheck`, `lint`, `format:check` y build de producción correctos.
 
 **Entregable:** informes y configuración funcionales.
 
@@ -795,6 +813,10 @@ Recorrido que debe poder hacerse frente al cliente:
 | 05/11/2026 | F12 | Recorrido guiado global de 13 pasos con navegación automática, atajos de teclado y modo presentación. | Completado |
 | 05/11/2026 | F12 | Enlaces profundos agregados en Compras, Ventas, Tesorería, Contaduría, Libros y Balances. | Completado |
 | 05/11/2026 | F12 | Verificación de compra nueva recorriendo las nueve etapas; 129 tests aprobados y build de producción correcto. | Completado |
+| 05/11/2026 | F13 | Informes implementados: ventas por cliente, compras por proveedor, IVA por alícuota y top de productos con filtro de período. | Completado |
+| 05/11/2026 | F13 | Exportación CSV con escapes, CRLF, totales, importes en pesos y BOM UTF-8; pestañas y submenú sincronizados con la ruta. | Completado |
+| 05/11/2026 | F13 | Configuración completa: empresa y usuario editables, logo con previsualización, versión de esquema, uso de almacenamiento y reset demo. | Completado |
+| 05/11/2026 | F13 | Persistencia de usuario/empresa con compatibilidad hacia atrás; 152 tests aprobados y build de producción correcto. | Completado |
 
 ---
 
