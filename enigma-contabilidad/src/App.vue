@@ -5,15 +5,18 @@ import AppSidebar from '@/components/layout/AppSidebar.vue'
 import AppTopbar from '@/components/layout/AppTopbar.vue'
 import RecorridoGuiado from '@/components/recorrido/RecorridoGuiado.vue'
 import ToastStack from '@/components/ui/ToastStack.vue'
+import { useRecorridoStore } from '@/stores/recorrido'
 import { useUiStore } from '@/stores/ui'
 
 const ui = useUiStore()
+const recorrido = useRecorridoStore()
 const main = ref<HTMLElement | null>(null)
 
 const clasesShell = computed(() => ({
   'app-shell--colapsada': ui.sidebarColapsada,
   'app-shell--menu-abierto': ui.sidebarMovilAbierta,
   'app-shell--presentacion': ui.modoPresentacion,
+  'app-shell--recorrido': recorrido.abierto,
 }))
 
 function enfocarContenido(): void {

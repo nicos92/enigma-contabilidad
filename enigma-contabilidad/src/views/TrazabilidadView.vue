@@ -329,13 +329,16 @@ function abrirPantallaEtapa(): void {
             class="trazabilidad__etapa"
             :class="`trazabilidad__etapa--${etapa.estado}`"
           >
-            <span class="trazabilidad__marca" aria-hidden="true">
+            <span
+              class="trazabilidad__marca"
+              :data-paso="String(indice + 1).padStart(2, '0')"
+              aria-hidden="true"
+            >
               <component :is="iconoEtapa(etapa.clave)" :size="17" />
             </span>
 
             <div class="trazabilidad__etapa-cuerpo">
               <div class="trazabilidad__etapa-cabecera">
-                <span class="trazabilidad__numero" aria-hidden="true">{{ indice + 1 }}</span>
                 <div class="trazabilidad__etapa-titulo">
                   <strong>{{ etapa.titulo }}</strong>
                   <span>{{ etapa.departamento }}</span>
@@ -347,27 +350,33 @@ function abrirPantallaEtapa(): void {
 
               <p class="trazabilidad__etapa-descripcion">{{ etapa.descripcion }}</p>
 
-              <dl class="trazabilidad__etapa-meta">
-                <div>
-                  <dt>Fecha</dt>
-                  <dd>{{ etapa.fecha ? formatearFecha(etapa.fecha) : '—' }}</dd>
-                </div>
-                <div>
-                  <dt>Referencia</dt>
-                  <dd>{{ etapa.referencia ?? '—' }}</dd>
-                </div>
-                <div>
-                  <dt>Importe</dt>
-                  <dd class="texto-mono">
-                    {{ etapa.importe !== null ? formatearMoneda(etapa.importe) : '—' }}
-                  </dd>
-                </div>
-              </dl>
+              <div class="trazabilidad__etapa-pie">
+                <dl class="trazabilidad__etapa-meta">
+                  <div>
+                    <dt>Fecha</dt>
+                    <dd>{{ etapa.fecha ? formatearFecha(etapa.fecha) : '—' }}</dd>
+                  </div>
+                  <div>
+                    <dt>Referencia</dt>
+                    <dd>{{ etapa.referencia ?? '—' }}</dd>
+                  </div>
+                  <div>
+                    <dt>Importe</dt>
+                    <dd class="texto-mono">
+                      {{ etapa.importe !== null ? formatearMoneda(etapa.importe) : '—' }}
+                    </dd>
+                  </div>
+                </dl>
 
-              <RouterLink class="trazabilidad__enlace" :to="etapa.destino">
-                Abrir pantalla de {{ etapa.departamento }}
-                <ExternalLink :size="14" aria-hidden="true" />
-              </RouterLink>
+                <RouterLink
+                  class="trazabilidad__enlace"
+                  :to="etapa.destino"
+                  :aria-label="`Abrir pantalla de ${etapa.departamento}`"
+                >
+                  Abrir pantalla
+                  <ExternalLink :size="13" aria-hidden="true" />
+                </RouterLink>
+              </div>
             </div>
           </li>
         </ol>
@@ -584,44 +593,73 @@ function abrirPantallaEtapa(): void {
 }
 
 .trazabilidad__flujo {
+  position: relative;
   display: grid;
-  gap: var(--espacio-3);
+}
+
+.trazabilidad__flujo::before {
+  position: absolute;
+  top: 22px;
+  bottom: 22px;
+  left: 21px;
+  width: 2px;
+  background: var(--color-borde-suave);
+  content: '';
 }
 
 .trazabilidad__etapa {
+  position: relative;
   display: flex;
   gap: var(--espacio-3);
-  padding: var(--espacio-3);
-  border: var(--borde-fino);
-  border-radius: var(--radio-md);
-  background: var(--color-superficie);
+  padding-bottom: var(--espacio-3);
 }
 
-.trazabilidad__etapa--actual {
-  border-color: var(--color-primario-borde);
-  background: var(--color-primario-suave);
-}
-
-.trazabilidad__etapa--observado {
-  border-color: var(--color-error-borde);
-  background: var(--color-error-suave);
+.trazabilidad__etapa:last-child {
+  padding-bottom: 0;
 }
 
 .trazabilidad__marca {
+  position: relative;
+  z-index: 1;
   display: grid;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   flex: 0 0 auto;
   place-items: center;
   border: 1px solid var(--color-borde);
-  border-radius: var(--radio-sm);
-  background: var(--color-superficie-suave);
+  border-radius: var(--radio-completo);
+  background: var(--color-superficie);
   color: var(--color-texto-suave);
+  box-shadow: 0 0 0 4px var(--color-fondo);
+}
+
+.trazabilidad__marca::after {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: grid;
+  width: 16px;
+  height: 16px;
+  place-items: center;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-completo);
+  background: var(--color-superficie);
+  color: var(--color-texto-tenue);
+  content: attr(data-paso);
+  font-size: 8px;
+  font-weight: var(--peso-semi);
+  line-height: 1;
 }
 
 .trazabilidad__etapa--completado .trazabilidad__marca {
   border-color: var(--color-exito-borde);
   background: var(--color-exito-suave);
+  color: var(--color-exito);
+}
+
+.trazabilidad__etapa--completado .trazabilidad__marca::after {
+  border-color: var(--color-exito-borde);
+  background: var(--color-superficie);
   color: var(--color-exito);
 }
 
@@ -640,34 +678,35 @@ function abrirPantallaEtapa(): void {
 .trazabilidad__etapa-cuerpo {
   min-width: 0;
   flex: 1;
+  padding: var(--espacio-3) var(--espacio-4);
+  border: var(--borde-fino);
+  border-radius: var(--radio-md);
+  background: var(--color-superficie);
+}
+
+.trazabilidad__etapa--actual .trazabilidad__etapa-cuerpo {
+  border-color: var(--color-primario-borde);
+  background: var(--color-primario-suave);
+}
+
+.trazabilidad__etapa--observado .trazabilidad__etapa-cuerpo {
+  border-color: var(--color-error-borde);
+  background: var(--color-error-suave);
 }
 
 .trazabilidad__etapa-cabecera {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: var(--espacio-2);
-}
-
-.trazabilidad__numero {
-  display: grid;
-  width: 20px;
-  height: 20px;
-  flex: 0 0 auto;
-  place-items: center;
-  border-radius: var(--radio-completo);
-  background: var(--color-fondo-alterno);
-  color: var(--color-texto-tenue);
-  font-size: var(--texto-xs);
-  font-weight: var(--peso-semi);
 }
 
 .trazabilidad__etapa-titulo {
   display: flex;
   min-width: 0;
-  flex: 1;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: var(--espacio-2);
+  gap: 2px var(--espacio-2);
 }
 
 .trazabilidad__etapa-titulo strong {
@@ -682,47 +721,61 @@ function abrirPantallaEtapa(): void {
 }
 
 .trazabilidad__etapa-descripcion {
-  margin-top: var(--espacio-2);
+  margin-top: 3px;
   color: var(--color-texto-suave);
   font-size: var(--texto-sm);
+  line-height: 1.45;
+}
+
+.trazabilidad__etapa-pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2) var(--espacio-4);
+  margin-top: var(--espacio-2);
 }
 
 .trazabilidad__etapa-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--espacio-2) var(--espacio-5);
-  margin-top: var(--espacio-2);
+  gap: 4px var(--espacio-4);
 }
 
 .trazabilidad__etapa-meta div {
   display: flex;
   align-items: baseline;
-  gap: var(--espacio-2);
+  gap: 4px;
 }
 
 .trazabilidad__etapa-meta dt {
   color: var(--color-texto-tenue);
-  font-size: var(--texto-xs);
+  font-size: 10px;
+  text-transform: uppercase;
 }
 
 .trazabilidad__etapa-meta dd {
   color: var(--color-texto-suave);
-  font-size: var(--texto-sm);
+  font-size: var(--texto-xs);
 }
 
 .trazabilidad__enlace {
   display: inline-flex;
   align-items: center;
-  gap: var(--espacio-1);
-  margin-top: var(--espacio-2);
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-completo);
   color: var(--color-primario);
-  font-size: var(--texto-sm);
+  font-size: var(--texto-xs);
   font-weight: var(--peso-medio);
+  white-space: nowrap;
 }
 
 .trazabilidad__enlace:hover {
+  border-color: var(--color-primario-borde);
+  background: var(--color-primario-suave);
   color: var(--color-primario-hover);
-  text-decoration: underline;
 }
 
 .trazabilidad__columnas {
@@ -809,7 +862,8 @@ function abrirPantallaEtapa(): void {
 
 .trazabilidad__pasos {
   display: grid;
-  gap: var(--espacio-2);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px var(--espacio-2);
 }
 
 .trazabilidad__paso {
@@ -866,6 +920,10 @@ function abrirPantallaEtapa(): void {
   .trazabilidad__resumen {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .trazabilidad__pasos {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 860px) {
@@ -880,7 +938,26 @@ function abrirPantallaEtapa(): void {
     grid-template-columns: 1fr;
   }
 
+  .trazabilidad__flujo::before {
+    left: 17px;
+  }
+
   .trazabilidad__etapa {
+    gap: var(--espacio-2);
+  }
+
+  .trazabilidad__marca {
+    width: 36px;
+    height: 36px;
+  }
+
+  .trazabilidad__etapa-cuerpo {
+    padding: var(--espacio-2) var(--espacio-3);
+  }
+
+  .trazabilidad__etapa-cabecera,
+  .trazabilidad__etapa-pie {
+    align-items: flex-start;
     flex-direction: column;
   }
 

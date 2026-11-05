@@ -844,6 +844,11 @@
   outline: 0;
 }
 
+/* Recorrido guiado --------------------------------------------------------- */
+.app-shell--recorrido .app-main {
+  padding-bottom: calc(var(--espacio-12) + 180px);
+}
+
 /* Modo presentación -------------------------------------------------------- */
 .app-shell--presentacion .app-sidebar,
 .app-shell--presentacion .app-topbar,

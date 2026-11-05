@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { Check, ChevronLeft, ChevronRight, ListChecks, Presentation, X } from '@lucide/vue'
-import { computed, onBeforeUnmount, onMounted, watch } from 'vue'
+import {
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ListChecks,
+  Presentation,
+  X,
+} from '@lucide/vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import AppBadge from '@/components/ui/AppBadge.vue'
 import AppButton from '@/components/ui/AppButton.vue'
-import type { TipoBadge } from '@/components/ui/tipos'
 import { useRecorridoStore } from '@/stores/recorrido'
 import { useUiStore } from '@/stores/ui'
 
@@ -12,6 +18,8 @@ const recorrido = useRecorridoStore()
 const ui = useUiStore()
 const router = useRouter()
 const route = useRoute()
+
+const pasosAbiertos = ref(false)
 
 const visible = computed(() => recorrido.abierto && Boolean(recorrido.pasoActual))
 
@@ -26,16 +34,7 @@ const etiquetaTipo = computed(() => {
   }
 })
 
-const tipoBadge = computed<TipoBadge>(() => {
-  switch (recorrido.pasoActual?.tipoOperacion) {
-    case 'compra':
-      return 'info'
-    case 'venta':
-      return 'exito'
-    default:
-      return 'neutral'
-  }
-})
+const completados = computed(() => Math.min(recorrido.numeroPaso - 1, recorrido.total))
 
 async function sincronizarPantalla(): Promise<void> {
   if (!recorrido.abierto) return
@@ -56,6 +55,13 @@ watch(
   { immediate: true },
 )
 
+watch(
+  () => recorrido.abierto,
+  (abierto) => {
+    if (!abierto) pasosAbiertos.value = false
+  },
+)
+
 function cerrar(): void {
   recorrido.cerrar()
   ui.desactivarModoPresentacion()
@@ -67,6 +73,15 @@ function finalizar(): void {
 
 function alternarPresentacion(): void {
   ui.alternarModoPresentacion()
+}
+
+function alternarPasos(): void {
+  pasosAbiertos.value = !pasosAbiertos.value
+}
+
+function seleccionarPaso(numero: number): void {
+  recorrido.irAPaso(numero)
+  pasosAbiertos.value = false
 }
 
 function alTeclear(evento: KeyboardEvent): void {
@@ -99,39 +114,76 @@ onBeforeUnmount(() => window.removeEventListener('keydown', alTeclear))
 </script>
 
 <template>
-  <div v-if="visible && recorrido.pasoActual" class="recorrido">
-    <div class="recorrido__barra">
-      <div class="recorrido__cabecera">
+  <div
+    v-if="visible && recorrido.pasoActual"
+    class="recorrido"
+    :class="{ 'recorrido--presentacion': ui.modoPresentacion }"
+  >
+    <section class="recorrido__panel" role="region" aria-label="Recorrido guiado">
+      <header class="recorrido__cabecera">
         <span class="recorrido__icono" aria-hidden="true">
-          <Presentation :size="16" />
+          <Presentation :size="15" />
         </span>
-        <span class="recorrido__contador"
-          >Paso {{ recorrido.numeroPaso }} de {{ recorrido.total }}</span
-        >
-        <AppBadge :tipo="tipoBadge">{{ etiquetaTipo }}</AppBadge>
-        <span class="recorrido__departamento">{{ recorrido.pasoActual.departamento }}</span>
+        <div class="recorrido__identidad">
+          <span class="recorrido__eyebrow">
+            Recorrido guiado
+            <span class="recorrido__tipo">{{ etiquetaTipo }}</span>
+          </span>
+          <strong>Paso {{ recorrido.numeroPaso }} de {{ recorrido.total }}</strong>
+        </div>
+        <div class="recorrido__cabecera-acciones">
+          <button
+            type="button"
+            class="recorrido__icono-boton"
+            :aria-label="
+              ui.modoPresentacion ? 'Salir del modo presentación' : 'Activar modo presentación'
+            "
+            :title="ui.modoPresentacion ? 'Salir de presentación' : 'Modo presentación'"
+            @click="alternarPresentacion"
+          >
+            <Presentation :size="15" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            class="recorrido__icono-boton"
+            aria-label="Cerrar recorrido guiado"
+            title="Cerrar recorrido"
+            @click="cerrar"
+          >
+            <X :size="15" aria-hidden="true" />
+          </button>
+        </div>
+      </header>
 
-        <button
-          type="button"
-          class="recorrido__cerrar"
-          aria-label="Cerrar recorrido guiado"
-          @click="cerrar"
-        >
-          <X :size="16" aria-hidden="true" />
-        </button>
+      <div class="recorrido__progreso" aria-hidden="true">
+        <span :style="{ width: `${recorrido.porcentaje}%` }" />
       </div>
 
       <div class="recorrido__cuerpo">
-        <div class="recorrido__texto">
-          <strong>{{ recorrido.pasoActual.titulo }}</strong>
-          <p>{{ recorrido.pasoActual.descripcion }}</p>
-        </div>
+        <span class="recorrido__departamento">{{ recorrido.pasoActual.departamento }}</span>
+        <strong class="recorrido__titulo">{{ recorrido.pasoActual.titulo }}</strong>
+        <p class="recorrido__descripcion">{{ recorrido.pasoActual.descripcion }}</p>
+      </div>
 
-        <div class="recorrido__acciones">
-          <AppButton variante="fantasma" tamano="sm" @click="alternarPresentacion">
-            <Presentation :size="15" aria-hidden="true" />
-            {{ ui.modoPresentacion ? 'Salir de presentación' : 'Modo presentación' }}
-          </AppButton>
+      <div class="recorrido__pie">
+        <button
+          type="button"
+          class="recorrido__ver-pasos"
+          :aria-expanded="pasosAbiertos"
+          aria-controls="recorrido-pasos"
+          @click="alternarPasos"
+        >
+          <ListChecks :size="15" aria-hidden="true" />
+          {{ pasosAbiertos ? 'Ocultar pasos' : `Ver pasos · ${completados}/${recorrido.total}` }}
+          <ChevronDown
+            :size="14"
+            class="recorrido__chevron"
+            :class="{ 'recorrido__chevron--abierto': pasosAbiertos }"
+            aria-hidden="true"
+          />
+        </button>
+
+        <div class="recorrido__navegacion">
           <AppButton
             variante="secundario"
             tamano="sm"
@@ -152,32 +204,33 @@ onBeforeUnmount(() => window.removeEventListener('keydown', alTeclear))
         </div>
       </div>
 
-      <ol class="recorrido__pasos" aria-label="Pasos del recorrido">
-        <li v-for="paso in recorrido.pasos" :key="paso.clave">
-          <button
-            type="button"
-            class="recorrido__punto"
-            :class="{ 'recorrido__punto--activo': paso.numero === recorrido.numeroPaso }"
-            :aria-label="`Ir al paso ${paso.numero}: ${paso.titulo}`"
-            :aria-current="paso.numero === recorrido.numeroPaso ? 'step' : undefined"
-            :title="`${paso.numero}. ${paso.titulo}`"
-            @click="recorrido.irAPaso(paso.numero)"
-          >
-            <Check
-              v-if="paso.numero < recorrido.numeroPaso"
-              :size="10"
-              :stroke-width="3"
-              aria-hidden="true"
-            />
-            <template v-else>{{ paso.numero }}</template>
-          </button>
-        </li>
-      </ol>
-
-      <div class="recorrido__progreso" aria-hidden="true">
-        <span :style="{ width: `${recorrido.porcentaje}%` }" />
+      <div v-if="pasosAbiertos" id="recorrido-pasos" class="recorrido__desplegable">
+        <ol class="recorrido__lista" aria-label="Pasos del recorrido">
+          <li v-for="paso in recorrido.pasos" :key="paso.clave">
+            <button
+              type="button"
+              class="recorrido__paso"
+              :class="{
+                'recorrido__paso--activo': paso.numero === recorrido.numeroPaso,
+                'recorrido__paso--hecho': paso.numero < recorrido.numeroPaso,
+              }"
+              :aria-current="paso.numero === recorrido.numeroPaso ? 'step' : undefined"
+              @click="seleccionarPaso(paso.numero)"
+            >
+              <span class="recorrido__paso-numero" aria-hidden="true">
+                <Check v-if="paso.numero < recorrido.numeroPaso" :size="11" :stroke-width="3" />
+                <template v-else>{{ paso.numero }}</template>
+              </span>
+              <span class="recorrido__paso-texto">
+                <strong>{{ paso.titulo }}</strong>
+                <small>{{ paso.departamento }}</small>
+              </span>
+              <ChevronRight :size="14" class="recorrido__paso-flecha" aria-hidden="true" />
+            </button>
+          </li>
+        </ol>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
@@ -186,17 +239,20 @@ onBeforeUnmount(() => window.removeEventListener('keydown', alTeclear))
   position: fixed;
   right: var(--espacio-5);
   bottom: var(--espacio-5);
-  left: var(--espacio-5);
   z-index: calc(var(--capa-modal) - 1);
-  display: flex;
-  justify-content: center;
+  width: min(380px, calc(100vw - 2 * var(--espacio-5)));
   pointer-events: none;
 }
 
-.recorrido__barra {
-  position: relative;
-  width: min(980px, 100%);
+.recorrido--presentacion {
+  width: min(420px, calc(100vw - 2 * var(--espacio-5)));
+}
+
+.recorrido__panel {
+  display: flex;
   overflow: hidden;
+  max-height: calc(100vh - 2 * var(--espacio-5));
+  flex-direction: column;
   border: 1px solid var(--color-borde-fuerte);
   border-radius: var(--radio-lg);
   background: var(--color-superficie);
@@ -208,15 +264,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', alTeclear))
   display: flex;
   align-items: center;
   gap: var(--espacio-2);
-  padding: var(--espacio-2) var(--espacio-4);
-  border-bottom: 1px solid var(--color-borde-suave);
-  background: var(--color-superficie-suave);
+  padding: var(--espacio-3) var(--espacio-3) var(--espacio-2);
 }
 
 .recorrido__icono {
   display: grid;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   flex: 0 0 auto;
   place-items: center;
   border-radius: var(--radio-sm);
@@ -224,84 +278,180 @@ onBeforeUnmount(() => window.removeEventListener('keydown', alTeclear))
   color: var(--color-primario);
 }
 
-.recorrido__contador {
+.recorrido__identidad {
+  min-width: 0;
+  flex: 1;
+}
+
+.recorrido__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-texto-tenue);
+  font-size: 10px;
+  font-weight: var(--peso-semi);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.recorrido__tipo {
+  padding: 1px 6px;
+  border-radius: var(--radio-completo);
+  background: var(--color-fondo-alterno);
+  color: var(--color-texto-suave);
+  font-size: 9px;
+  letter-spacing: 0.02em;
+}
+
+.recorrido__identidad strong {
+  display: block;
+  margin-top: 1px;
   color: var(--color-texto);
   font-size: var(--texto-sm);
   font-weight: var(--peso-semi);
 }
 
-.recorrido__departamento {
-  overflow: hidden;
-  color: var(--color-texto-tenue);
-  font-size: var(--texto-xs);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.recorrido__cabecera-acciones {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
 }
 
-.recorrido__cerrar {
+.recorrido__icono-boton {
   display: grid;
   width: 28px;
   height: 28px;
-  margin-left: auto;
-  flex: 0 0 auto;
   place-items: center;
   border-radius: var(--radio-sm);
   color: var(--color-texto-tenue);
 }
 
-.recorrido__cerrar:hover {
+.recorrido__icono-boton:hover {
   background: var(--color-fondo-alterno);
   color: var(--color-texto);
 }
 
-.recorrido__cuerpo {
-  display: flex;
-  align-items: center;
-  gap: var(--espacio-5);
-  padding: var(--espacio-4);
-}
-
-.recorrido__texto {
-  min-width: 0;
-  flex: 1;
-}
-
-.recorrido__texto strong {
-  display: block;
-  color: var(--color-texto);
-  font-size: var(--texto-lg);
-  font-weight: var(--peso-semi);
-}
-
-.recorrido__texto p {
-  margin-top: 2px;
-  color: var(--color-texto-suave);
-  font-size: var(--texto-sm);
-}
-
-.recorrido__acciones {
-  display: flex;
+.recorrido__progreso {
+  height: 3px;
   flex: 0 0 auto;
-  flex-wrap: wrap;
+  background: var(--color-borde-suave);
+}
+
+.recorrido__progreso span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primario), #7ba2ff);
+  transition: width var(--transicion-base);
+}
+
+.recorrido__cuerpo {
+  padding: var(--espacio-3) var(--espacio-4);
+}
+
+.recorrido__departamento {
+  display: block;
+  overflow: hidden;
+  color: var(--color-texto-tenue);
+  font-size: 10px;
+  font-weight: var(--peso-semi);
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.recorrido__titulo {
+  display: block;
+  margin-top: 2px;
+  color: var(--color-texto);
+  font-size: var(--texto-base);
+  font-weight: var(--peso-semi);
+  line-height: 1.3;
+}
+
+.recorrido__descripcion {
+  margin-top: 3px;
+  color: var(--color-texto-suave);
+  font-size: var(--texto-xs);
+  line-height: 1.45;
+}
+
+.recorrido__pie {
+  display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+  padding: var(--espacio-2) var(--espacio-3);
+  border-top: 1px solid var(--color-borde-suave);
+  background: var(--color-superficie-suave);
+}
+
+.recorrido__ver-pasos {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 6px;
+  border-radius: var(--radio-sm);
+  color: var(--color-texto-suave);
+  font-size: 11px;
+  font-weight: var(--peso-medio);
+  white-space: nowrap;
+}
+
+.recorrido__ver-pasos:hover {
+  background: var(--color-fondo-alterno);
+  color: var(--color-texto);
+}
+
+.recorrido__chevron {
+  transition: transform var(--transicion-rapida);
+}
+
+.recorrido__chevron--abierto {
+  transform: rotate(180deg);
+}
+
+.recorrido__navegacion {
+  display: flex;
+  align-items: center;
   gap: var(--espacio-2);
 }
 
-.recorrido__pasos {
+.recorrido__desplegable {
+  min-height: 0;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  padding: var(--espacio-2);
+  border-top: 1px solid var(--color-borde-suave);
+  background: var(--color-superficie);
+}
+
+.recorrido__lista {
+  display: grid;
+  gap: 2px;
+}
+
+.recorrido__paso {
   display: flex;
+  width: 100%;
   align-items: center;
-  gap: 4px;
-  padding: 0 var(--espacio-4) var(--espacio-3);
-  overflow-x: auto;
-  scrollbar-width: none;
+  gap: var(--espacio-2);
+  padding: 6px var(--espacio-2);
+  border-radius: var(--radio-sm);
+  text-align: left;
 }
 
-.recorrido__pasos::-webkit-scrollbar {
-  display: none;
+.recorrido__paso:hover {
+  background: var(--color-superficie-suave);
 }
 
-.recorrido__punto {
+.recorrido__paso--activo {
+  background: var(--color-primario-suave);
+}
+
+.recorrido__paso-numero {
   display: grid;
   width: 22px;
   height: 22px;
@@ -313,34 +463,55 @@ onBeforeUnmount(() => window.removeEventListener('keydown', alTeclear))
   color: var(--color-texto-tenue);
   font-size: 9px;
   font-weight: var(--peso-semi);
-  transition:
-    background-color var(--transicion-rapida),
-    border-color var(--transicion-rapida),
-    color var(--transicion-rapida);
 }
 
-.recorrido__punto:hover {
-  border-color: var(--color-primario-borde);
-  color: var(--color-primario);
+.recorrido__paso--hecho .recorrido__paso-numero {
+  border-color: var(--color-exito-borde);
+  background: var(--color-exito-suave);
+  color: var(--color-exito);
 }
 
-.recorrido__punto--activo {
+.recorrido__paso--activo .recorrido__paso-numero {
   border-color: var(--color-primario);
   background: var(--color-primario);
   color: #fff;
-  box-shadow: var(--sombra-foco);
 }
 
-.recorrido__progreso {
-  height: 3px;
-  background: var(--color-borde-suave);
+.recorrido__paso-texto {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
 }
 
-.recorrido__progreso span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-primario), #7ba2ff);
-  transition: width var(--transicion-base);
+.recorrido__paso-texto strong {
+  overflow: hidden;
+  color: var(--color-texto);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recorrido__paso-texto small {
+  overflow: hidden;
+  color: var(--color-texto-tenue);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recorrido__paso-flecha {
+  flex: 0 0 auto;
+  color: var(--color-texto-tenue);
+  opacity: 0;
+  transition: opacity var(--transicion-rapida);
+}
+
+.recorrido__paso:hover .recorrido__paso-flecha,
+.recorrido__paso--activo .recorrido__paso-flecha {
+  opacity: 1;
 }
 
 @media (max-width: 720px) {
@@ -348,21 +519,25 @@ onBeforeUnmount(() => window.removeEventListener('keydown', alTeclear))
     right: var(--espacio-3);
     bottom: var(--espacio-3);
     left: var(--espacio-3);
+    width: auto;
   }
 
-  .recorrido__cuerpo {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: var(--espacio-3);
-  }
-
-  .recorrido__acciones {
+  .recorrido__panel {
     width: 100%;
-    justify-content: flex-start;
   }
 
-  .recorrido__departamento {
-    display: none;
+  .recorrido__pie {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .recorrido__navegacion {
+    width: 100%;
+  }
+
+  .recorrido__navegacion :deep(.ui-button) {
+    flex: 1;
+    justify-content: center;
   }
 }
 </style>
