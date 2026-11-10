@@ -8,8 +8,12 @@ Thumbs.db
 # Dependencias y artefactos de build
 node_modules/
 dist/
+dist-single/
 coverage/
 *.tsbuildinfo
+
+# Entrega generada (build de producción y archivo autónomo)
+entrega/
 
 # Variables de entorno
 .env

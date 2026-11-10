@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
+    "build:single": "node scripts/build-single.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
