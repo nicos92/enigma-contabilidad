@@ -6,10 +6,10 @@
 **Proyecto:** Enigma Gestión — mini ERP de demostración
 **Cliente ficticio de la demo:** Comercializadora del Sur S.R.L.
 **Período de los datos:** noviembre de 2026
-**Última actualización:** 05/11/2026
-**Estado general:** Fase 13 completada — informes y configuración
-**Fases completadas:** 14 / 15
-**Próxima fase:** F14 — QA y entrega
+**Última actualización:** 09/11/2026
+**Estado general:** Fase 14 completada — QA, build y entrega
+**Fases completadas:** 15 / 15
+**Próxima fase:** — (proyecto entregado)
 
 ---
 
@@ -76,7 +76,7 @@ pnpm build
 pnpm preview
 ```
 
-El script opcional `build:single` generará un `dist/index.html` autónomo para el caso de que la consigna exija abrir el archivo con doble clic. No reemplaza el flujo normal de desarrollo.
+El script opcional `build:single` genera un `dist-single/index.html` autónomo para el caso de que la consigna exija abrir el archivo con doble clic. No reemplaza el flujo normal de desarrollo.
 
 ---
 
@@ -147,7 +147,7 @@ En las tareas:
 | F11 | Balances y estados | Comprobación, ESP, ER, flujo y evolución | Completado | 100% |
 | F12 | Trazabilidad | Stepper integrado y recorrido guiado | Completado | 100% |
 | F13 | Informes y configuración | Reportes, CSV, logo y reset | Completado | 100% |
-| F14 | QA y entrega | Tests, build, README y aceptación | Pendiente | 0% |
+| F14 | QA y entrega | Tests, build, README y aceptación | Completado | 100% |
 
 ---
 
@@ -702,27 +702,48 @@ En las tareas:
 
 ### F14 — QA, build y entrega
 
-**Estado:** Pendiente
+**Estado:** Completado
 **Depende de:** todas las anteriores
 **Objetivo:** cerrar la calidad, empaquetar y documentar la entrega.
 
 **Tareas**
 
-- [ ] Ejecutar todos los tests unitarios.
-- [ ] Verificar `pnpm typecheck`.
-- [ ] Verificar `pnpm build`.
-- [ ] Verificar `pnpm preview`.
-- [ ] Probar la aplicación en 1440, 1024 y 768 px.
-- [ ] Revisar accesibilidad básica: foco, teclado, labels y contraste.
-- [ ] Revisar que no haya botones decorativos sin acción.
-- [ ] Revisar que no haya pantallas vacías ni lorem ipsum.
-- [ ] Ejecutar el recorrido de aceptación completo.
-- [ ] Generar build autónomo opcional.
-- [ ] Escribir README con instalación, navegación, flujo contable, reset y logo.
-- [ ] Preparar carpeta final de entrega.
-- [ ] Actualizar este plan con el estado final.
+- [x] Ejecutar todos los tests unitarios.
+- [x] Verificar `pnpm typecheck`.
+- [x] Verificar `pnpm build`.
+- [x] Verificar `pnpm preview`.
+- [x] Probar la aplicación en 1440, 1024 y 768 px.
+- [x] Revisar accesibilidad básica: foco, teclado, labels y contraste.
+- [x] Revisar que no haya botones decorativos sin acción.
+- [x] Revisar que no haya pantallas vacías ni lorem ipsum.
+- [x] Ejecutar el recorrido de aceptación completo.
+- [x] Generar build autónomo opcional.
+- [x] Escribir README con instalación, navegación, flujo contable, reset y logo.
+- [x] Preparar carpeta final de entrega.
+- [x] Actualizar este plan con el estado final.
 
 **Entregable:** prototipo listo para presentar.
+
+**Evidencia**
+
+- `pnpm test` → 24 archivos y 152 tests aprobados.
+- `pnpm typecheck`, `pnpm lint` y `pnpm format:check` → sin errores.
+- `pnpm build` → build de producción correcto en `dist/`.
+- `pnpm preview` → verificado en `http://127.0.0.1:4173`.
+- Revisión automatizada de las 12 rutas en 1440, 1024 y 768 px: sin overflow, lorem ipsum,
+  botones sin nombre, errores de consola ni violaciones axe serias/críticas.
+- Revisión interactiva de todas las pestañas, modales de pago/cobro, altas de maestros y
+  formularios de compra/venta en 1440 y 768 px.
+- Correcciones de accesibilidad aplicadas: contraste de textos tenues y badges, nombre del menú
+  de usuario, acciones de Contaduría, región desplazable de tablas y gráfico, jerarquía del plan
+  de cuentas y marca de agua decorativa.
+- Recorrido de aceptación de 13 pasos, recorrido guiado, persistencia, logo, reset demo,
+  exportación CSV y navegación por teclado ejecutados sin errores de consola.
+- Verificación final: Debe = Haber (`$ 81.758.000,00`) y ecuación patrimonial conciliada.
+- `pnpm build:single` → `dist-single/index.html` autónomo de 1,01 MB probado con `file://`.
+- README ampliado con instalación, navegación, flujo contable, reset, logo, CSV, accesibilidad y
+  entrega.
+- Carpeta `entrega/` preparada con README de entrega, build de producción y archivo autónomo.
 
 **Criterio de aceptación**
 
@@ -737,24 +758,24 @@ En las tareas:
 
 Estas reglas aplican a todas las fases:
 
-- [ ] Toda la interfaz en español.
-- [ ] Moneda ARS con formato `$ 1.250.000,00`.
-- [ ] Fechas `DD/MM/AAAA`.
-- [ ] Datos ficticios, sin información personal o fiscal real.
-- [ ] Sin backend, autenticación real ni integración fiscal.
-- [ ] Sin duplicación de registraciones contables.
-- [ ] Todo asiento debe cumplir Debe = Haber.
-- [ ] El Mayor se deriva del Diario.
-- [ ] El Balance se deriva del Mayor.
-- [ ] Los estados se derivan del Balance.
-- [ ] Los movimientos de tesorería se vinculan con su comprobante.
-- [ ] Los formularios tienen validaciones visuales.
-- [ ] Las tablas tienen datos, filtros y estados vacíos.
-- [ ] Las acciones destructivas piden confirmación.
-- [ ] Las notificaciones distinguen éxito, advertencia y error.
-- [ ] La interfaz es responsive para computadoras y tablets.
-- [ ] Los modales se cierran con Escape y atrapan el foco.
-- [ ] El logo no se inventa: se usa el provisto o un placeholder explícito.
+- [x] Toda la interfaz en español.
+- [x] Moneda ARS con formato `$ 1.250.000,00`.
+- [x] Fechas `DD/MM/AAAA`.
+- [x] Datos ficticios, sin información personal o fiscal real.
+- [x] Sin backend, autenticación real ni integración fiscal.
+- [x] Sin duplicación de registraciones contables.
+- [x] Todo asiento debe cumplir Debe = Haber.
+- [x] El Mayor se deriva del Diario.
+- [x] El Balance se deriva del Mayor.
+- [x] Los estados se derivan del Balance.
+- [x] Los movimientos de tesorería se vinculan con su comprobante.
+- [x] Los formularios tienen validaciones visuales.
+- [x] Las tablas tienen datos, filtros y estados vacíos.
+- [x] Las acciones destructivas piden confirmación.
+- [x] Las notificaciones distinguen éxito, advertencia y error.
+- [x] La interfaz es responsive para computadoras y tablets.
+- [x] Los modales se cierran con Escape y atrapan el foco.
+- [x] El logo no se inventa: se usa el provisto o un placeholder explícito.
 
 ---
 
@@ -762,19 +783,19 @@ Estas reglas aplican a todas las fases:
 
 Recorrido que debe poder hacerse frente al cliente:
 
-1. [ ] Ingresar al Dashboard.
-2. [ ] Registrar una compra.
-3. [ ] Visualizar la factura recibida.
-4. [ ] Registrar el pago al proveedor.
-5. [ ] Ingresar a Contaduría.
-6. [ ] Revisar la documentación de la operación.
-7. [ ] Aprobar y generar el asiento contable.
-8. [ ] Consultar el asiento en el Libro Diario.
-9. [ ] Seleccionar una cuenta en el Libro Mayor y visualizar el movimiento.
-10. [ ] Consultar el balance de comprobación.
-11. [ ] Realizar una operación de venta.
-12. [ ] Registrar su posterior cobro.
-13. [ ] Comprobar cómo se actualiza la información contable.
+1. [x] Ingresar al Dashboard.
+2. [x] Registrar una compra.
+3. [x] Visualizar la factura recibida.
+4. [x] Registrar el pago al proveedor.
+5. [x] Ingresar a Contaduría.
+6. [x] Revisar la documentación de la operación.
+7. [x] Aprobar y generar el asiento contable.
+8. [x] Consultar el asiento en el Libro Diario.
+9. [x] Seleccionar una cuenta en el Libro Mayor y visualizar el movimiento.
+10. [x] Consultar el balance de comprobación.
+11. [x] Realizar una operación de venta.
+12. [x] Registrar su posterior cobro.
+13. [x] Comprobar cómo se actualiza la información contable.
 
 **Resultado esperado:** que el cliente comprenda que el sistema conecta todos los departamentos y transforma operaciones comerciales en información contable ordenada, verificable y útil.
 
@@ -817,6 +838,11 @@ Recorrido que debe poder hacerse frente al cliente:
 | 05/11/2026 | F13 | Exportación CSV con escapes, CRLF, totales, importes en pesos y BOM UTF-8; pestañas y submenú sincronizados con la ruta. | Completado |
 | 05/11/2026 | F13 | Configuración completa: empresa y usuario editables, logo con previsualización, versión de esquema, uso de almacenamiento y reset demo. | Completado |
 | 05/11/2026 | F13 | Persistencia de usuario/empresa con compatibilidad hacia atrás; 152 tests aprobados y build de producción correcto. | Completado |
+| 09/11/2026 | F14 | QA automatizada de las 12 rutas en 1440, 1024 y 768 px; sin errores de consola, overflow ni lorem ipsum. | Completado |
+| 09/11/2026 | F14 | Auditoría axe WCAG A/AA en rutas, pestañas, modales y formularios; correcciones de contraste, nombres accesibles, regiones desplazables y jerarquía de listas. | Completado |
+| 09/11/2026 | F14 | Recorrido de aceptación de 13 pasos, recorrido guiado, persistencia, logo, reset, CSV y teclado verificados sin errores. | Completado |
+| 09/11/2026 | F14 | Build autónomo `build:single` agregado y probado con `file://`; README y carpeta `entrega/` preparados. | Completado |
+| 09/11/2026 | F14 | Verificación final: 152 tests, typecheck, lint, format y build correctos; Debe = Haber y entrega cerrada. | Completado |
 
 ---
 
@@ -843,4 +869,17 @@ Recorrido que debe poder hacerse frente al cliente:
 4. [x] Completar F1: scaffold de `enigma-contabilidad/` con router, Pinia y tooling.
 5. [x] Completar F2: tipos, datos demo, motor contable, persistencia y tests.
 6. [x] Completar F3: design system, layout, sidebar, topbar y UI kit.
-7. [ ] Iniciar F4: dashboard con indicadores, gráficos y pendientes.
+7. [x] Completar F4: dashboard con indicadores, gráficos y pendientes.
+8. [x] Completar F5: compras con formulario, factura y asiento propuesto.
+9. [x] Completar F6: ventas con formulario, factura y cuenta por cobrar.
+10. [x] Completar F7: maestros de proveedores, clientes y productos.
+11. [x] Completar F8: tesorería con pagos, cobros, movimientos y transferencias.
+12. [x] Completar F9: contaduría con bandeja, asientos y plan de cuentas.
+13. [x] Completar F10: libros Diario y Mayor derivados de los asientos.
+14. [x] Completar F11: balances, estados contables y verificaciones de coherencia.
+15. [x] Completar F12: trazabilidad y recorrido guiado de 13 pasos.
+16. [x] Completar F13: informes, CSV, configuración, logo y reset.
+17. [x] Completar F14: QA, build, accesibilidad, README y entrega final.
+
+La entrega final está disponible en `../entrega/`; el código fuente y las instrucciones de
+ejecución permanecen en `../enigma-contabilidad/`.
