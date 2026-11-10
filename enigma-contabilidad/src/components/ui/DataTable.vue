@@ -41,7 +41,12 @@ function claseAlineacion(alineacion?: ColumnaTabla['alineacion']): string {
 </script>
 
 <template>
-  <div class="ui-tabla-contenedor">
+  <div
+    class="ui-tabla-contenedor"
+    role="region"
+    :aria-label="titulo ?? 'Tabla de datos'"
+    tabindex="0"
+  >
     <table class="ui-tabla" :class="{ 'ui-tabla--compacta': compacta }">
       <caption v-if="titulo" class="sr-only">
         {{

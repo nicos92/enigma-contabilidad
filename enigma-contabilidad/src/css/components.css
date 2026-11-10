@@ -826,7 +826,7 @@
   padding: 0 6px;
   border-radius: var(--radio-completo);
   background: var(--color-fondo-alterno);
-  color: var(--color-texto-tenue);
+  color: var(--color-texto-suave);
   font-size: var(--texto-xs);
 }
 
@@ -1025,6 +1025,10 @@
   text-transform: uppercase;
   transform: rotate(-24deg);
   user-select: none;
+}
+
+.documento__marca-agua::after {
+  content: 'Documento simulado';
 }
 
 .documento__cabecera {

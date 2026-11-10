@@ -327,10 +327,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', atajoGlobal))
         <button
           type="button"
           class="app-usuario__boton"
+          aria-haspopup="true"
           :aria-expanded="usuarioAbierto"
           aria-controls="menu-usuario"
           @click="alternarUsuario"
         >
+          <span class="sr-only">Abrir menú de usuario</span>
           <span class="app-usuario__avatar" aria-hidden="true">{{ inicialesUsuario }}</span>
           <span class="app-usuario__datos">
             <strong>{{ app.usuario.nombre }}</strong>

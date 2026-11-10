@@ -484,9 +484,11 @@ function cambiarFiltroCuentaAsiento(v: string): void {
             <AppButton
               variante="secundario"
               tamano="sm"
+              solo-icono
+              aria-label="Ver detalle del documento"
               @click="abrirDetalleDocumento(String(fila.id))"
             >
-              <Eye :size="14" />
+              <Eye :size="14" aria-hidden="true" />
             </AppButton>
           </template>
         </DataTable>
@@ -775,9 +777,12 @@ function cambiarFiltroCuentaAsiento(v: string): void {
     <template v-else>
       <AppCard titulo="Plan de cuentas" descripcion="Estructura jerárquica del plan contable.">
         <ul class="plan-cuentas">
-          <li v-for="raiz in arbolCuentas" :key="raiz.codigo">
-            <PlanCuentasNodo :cuenta="raiz" :nivel="0" />
-          </li>
+          <PlanCuentasNodo
+            v-for="raiz in arbolCuentas"
+            :key="raiz.codigo"
+            :cuenta="raiz"
+            :nivel="0"
+          />
         </ul>
       </AppCard>
     </template>

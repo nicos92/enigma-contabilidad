@@ -52,7 +52,8 @@ watch(() => route.fullPath, sincronizarMenu, { immediate: true })
 <template>
   <aside class="app-sidebar" aria-label="Navegación lateral">
     <div class="app-sidebar__marca">
-      <RouterLink to="/dashboard" class="app-brand" aria-label="Ir al panel general">
+      <RouterLink to="/dashboard" class="app-brand">
+        <span class="sr-only">Ir al panel general</span>
         <span class="app-brand__mark" aria-hidden="true">
           <img v-if="logoSrc" :src="logoSrc" alt="" />
           <template v-else>EG</template>

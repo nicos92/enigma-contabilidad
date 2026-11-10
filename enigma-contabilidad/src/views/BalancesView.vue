@@ -701,7 +701,12 @@ async function imprimirEstado(): Promise<void> {
           descripcion="Movimientos del capital, resultados acumulados y resultado del ejercicio."
         >
           <div class="estado estado--evolucion">
-            <div class="balances__tabla-scroll">
+            <div
+              class="balances__tabla-scroll"
+              role="region"
+              aria-label="Tabla de evolución del patrimonio neto"
+              tabindex="0"
+            >
               <table class="estado-tabla">
                 <thead>
                   <tr>

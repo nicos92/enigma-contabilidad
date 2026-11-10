@@ -97,7 +97,7 @@ const opciones = computed<ChartOptions<'bar'>>(() => ({
       beginAtZero: true,
       grid: { color: '#ebeff6' },
       ticks: {
-        color: '#8792a5',
+        color: '#5a667b',
         font: { family: 'Inter', size: 11 },
         callback: (valor) => formatearEje(valor),
       },
@@ -117,7 +117,12 @@ onMounted(() => {
 
 <template>
   <div class="dashboard-chart" role="img" :aria-label="descripcionAccesible">
-    <Bar v-if="soportaCanvas" :data="datos" :options="opciones" />
+    <Bar
+      v-if="soportaCanvas"
+      :data="datos"
+      :options="opciones"
+      :aria-label="descripcionAccesible"
+    />
     <table v-else class="dashboard-chart__alternativa">
       <caption class="sr-only">
         {{

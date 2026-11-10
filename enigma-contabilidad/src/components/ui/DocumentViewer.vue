@@ -22,7 +22,7 @@ function importeLinea(item: ItemDocumentoVista): number {
 
 <template>
   <article class="documento" aria-label="Visor de documento">
-    <div class="documento__marca-agua" aria-hidden="true">Documento simulado</div>
+    <div class="documento__marca-agua" aria-hidden="true"></div>
 
     <header class="documento__cabecera">
       <div class="documento__emisor">
